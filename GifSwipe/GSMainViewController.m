@@ -364,8 +364,8 @@
 
 - (IBAction)shareAction:(id)sender {
     dispatch_async(dispatch_get_main_queue(), ^{
-    NSString *shareString = [NSString stringWithFormat:@"%@\rvia GifSwipe",self.currentGifView.gif.caption];
-    [self shareText:shareString andImage:[UIImage animatedImageWithAnimatedGIFURL:[NSURL URLWithString:self.currentGifView.gif.gifLink]] andUrl:[NSURL URLWithString:self.currentGifView.gif.gifLink]];
+        NSString *shareString = [NSString stringWithFormat:@"Check out this Gif I found via GifSwipe!\r%@\r",self.currentGifView.gif.caption];
+        [self shareText:shareString andImage:nil andUrl:[NSURL URLWithString:self.currentGifView.gif.gifLink]];
     });
 }
 @end

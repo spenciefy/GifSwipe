@@ -25,7 +25,7 @@
 
 - (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit withCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
     
-    NSString *urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/new/.json?count=%@&limit=%@", from, limit];
+    NSString *urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/.json?count=%@&limit=%@", from, limit];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
@@ -65,8 +65,12 @@
     if(!([caption hasPrefix:@"\""] && [caption hasSuffix:@"\""])){
         caption = [NSString stringWithFormat:@"\"%@\"", caption];
     }
-    if(([urlWithoutV rangeOfString:@".gif"].location != NSNotFound) && ![jsonPost[@"thumbnail"] isEqualToString:@"nsfw"] && ![jsonPost[@"thumbnail"] isEqualToString:@"default"]) {
-        GSGif *gif = [[GSGif alloc] initWithLink:urlWithoutV previewLink:jsonPost[@"thumbnail"] caption:caption gifID:jsonPost[@"name"]];
+    if([urlWithoutV rangeOfString:@".gif"].location != NSNotFound) {
+        NSString *previewLink = jsonPost[@"thumbnail"];
+        if([previewLink isEqualToString:@"nsfw"] || [previewLink isEqualToString:@"default"]) {
+            previewLink = nil;
+        }
+        GSGif *gif = [[GSGif alloc] initWithLink:urlWithoutV previewLink:previewLink caption:caption gifID:jsonPost[@"name"]];
         return gif;
     } else {
         return nil;
