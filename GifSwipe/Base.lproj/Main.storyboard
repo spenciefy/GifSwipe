@@ -17,11 +17,42 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="GifSwipe" id="ajq-vc-HNg"/>
+                    <navigationItem key="navigationItem" title="GifSwipe" id="ajq-vc-HNg">
+                        <barButtonItem key="leftBarButtonItem" systemItem="action" id="k4p-MS-fqS">
+                            <color key="tintColor" red="0.90980392160000001" green="0.16078431369999999" blue="0.30588235289999999" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="shareAction:" destination="Wi0-F1-3xh" id="9yX-Aw-tjr"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" image="heart65.png" id="MxT-hw-QUQ">
+                            <color key="tintColor" red="0.90980392156862744" green="0.16078431372549021" blue="0.30588235294117649" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="shareActionButton" destination="k4p-MS-fqS" id="zaU-is-Mcu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hXF-Dk-IL5" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="419" y="820"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="Z76-og-C1r">
+            <objects>
+                <viewController id="jBA-z4-4dc" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="rQ6-VY-iSY"/>
+                        <viewControllerLayoutGuide type="bottom" id="6xo-j3-k3v"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="L6h-zI-jTF">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oGC-11-d4L" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1050" y="820"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="5xl-PD-Pl1">
@@ -45,4 +76,7 @@
             <point key="canvasLocation" x="-286" y="820"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="heart65.png" width="32" height="32"/>
+    </resources>
 </document>

@@ -10,6 +10,7 @@
 #import "GSGifManager.h"
 #import <MDCSwipeToChoose/MDCSwipeToChoose.h>
 #import "Reachability.h"
+#import "UIImage+animatedGIF.h"
 
 @interface GSMainViewController ()
 
@@ -31,7 +32,9 @@
     
     [self setupNullState];
     currentlyAddingViews = NO;
-
+    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
+    [self.navigationItem.leftBarButtonItem setEnabled:NO];
+    
     if(![self hasNetwork]) {
         [self setNullStateNoConnection];
     } else {
@@ -54,6 +57,9 @@
         self.addedGifIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
         self.gifViews = [@[self.backGifView] mutableCopy];
         
+        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
+            
         for(int i = 0; i < 5; i++) {
             GSGifView *gifView = [self fetchNextGifView];
             if(gifView && ![self.addedGifIDs containsObject:gifView.gif.gifID]) {
@@ -117,7 +123,7 @@
                             
                             if(self.gifViews.count > 1 && !self.currentGifView) {
                                 [self loadNewFrontBackViews];
-                                                            }
+                            }
                         } else {
                             NSLog(@"error: %@", gifView.gif.caption);
                         }
@@ -142,6 +148,9 @@
 
 - (void)loadNewFrontBackViews {
     dispatch_async(dispatch_get_main_queue(), ^{
+        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
+        
         self.frontGifView = self.gifViews[0];
         self.frontGifView.frame = [self frontGifViewFrame];
         self.frontGifView.alpha = 1;
@@ -176,6 +185,8 @@
     
     if(!self.backGifView) {
         self.currentGifView = nil;
+        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
+        [self.navigationItem.leftBarButtonItem setEnabled:NO];
     }
     
     if([self.gifViews count] > 0){
@@ -295,24 +306,30 @@
 }
 
 - (void)setNullStateLoading {
+    dispatch_async(dispatch_get_main_queue(), ^{
+    NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
+    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+
+    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+    nullStateImageView.animatedImage = gifImage;
+        
     nullStateLabel.text = @"Finding some more gifs for you :)";
     
     nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
     nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
-    NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
-    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
-    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
-    nullStateImageView.animatedImage = gifImage;
 
+    });
 }
 
 - (void)setNullStateNoConnection {
+    dispatch_async(dispatch_get_main_queue(), ^{
+
     nullStateLabel.text = @"You're not connected to the internet :(";
     NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
     NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
     nullStateImageView.animatedImage = gifImage;
-
+    });
 }
 
 - (BOOL)hasNetwork {
@@ -326,5 +343,29 @@
     }
 }
 
+- (void)shareText:(NSString *)text andImage:(UIImage *)image andUrl:(NSURL *)url
+{
+    NSMutableArray *sharingItems = [NSMutableArray new];
+    
+    if (text) {
+        [sharingItems addObject:text];
+    }
+    if (image) {
+        [sharingItems addObject:image];
+    }
+    if (url) {
+        [sharingItems addObject:url];
+    }
+    
+    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
+    [self presentViewController:activityController animated:YES completion:nil];
+}
 
+
+- (IBAction)shareAction:(id)sender {
+    dispatch_async(dispatch_get_main_queue(), ^{
+    NSString *shareString = [NSString stringWithFormat:@"%@\rvia GifSwipe",self.currentGifView.gif.caption];
+    [self shareText:shareString andImage:[UIImage animatedImageWithAnimatedGIFURL:[NSURL URLWithString:self.currentGifView.gif.gifLink]] andUrl:[NSURL URLWithString:self.currentGifView.gif.gifLink]];
+    });
+}
 @end

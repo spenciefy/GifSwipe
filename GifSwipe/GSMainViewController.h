@@ -22,6 +22,8 @@
 @property (nonatomic, strong) GSGifView *seventhGifView;
 @property (nonatomic, strong) GSGifView *eigthGifView;
 
+- (IBAction)shareAction:(id)sender;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *shareActionButton;
 
 
 @end
