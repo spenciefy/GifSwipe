@@ -52,6 +52,8 @@
             completionBlock(gifs, nil);
         }
     }
+    } else {
+        completionBlock(nil, error);
     }
 }
 

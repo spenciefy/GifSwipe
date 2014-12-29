@@ -42,6 +42,7 @@
 
 - (void)setupMainView {
     [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"50" withCompletionBlock:^(NSArray *gifs, NSError *error) {
+        if(!error){
         gifCount = 50;
         self.gifs = [gifs mutableCopy];
         
@@ -65,6 +66,7 @@
         }
         
         [self loadMoreGifViews];
+        }
     }];
 }
 
@@ -97,7 +99,8 @@
 
 - (void)loadMoreGifViews {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        if(self.gifs.count >= 20 && !currentlyAddingViews) {
+        if(!currentlyAddingViews){
+        if(self.gifs.count >= 20) {
             if(self.gifViews.count < 10) {
                 currentlyAddingViews = YES;
                 for(int i = 0; i < 15; i++) {
@@ -128,7 +131,9 @@
                 [self loadMoreGifViews];
             }];
         }
+        }
     });
+    
 }
 
 - (void)loadNewFrontBackViews {
@@ -163,6 +168,8 @@
     // after it is swiped (this behavior can be customized via the
     // MDCSwipeOptions class). Since the front card view is gone, we
     // move the back card to the front, and create a new back card.
+    [self setNullStateLoading];
+    
     if(!self.backGifView) {
         self.currentGifView = nil;
     }
