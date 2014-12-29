@@ -25,7 +25,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupNullState];
-    
+    //nullStateLabel.text = @"You're not connected to the internet :(";
+
     swipeToRight = NO;
     [[GSGifManager sharedInstance] fetchGifsWithCompletionBlock:^(NSArray *gifs, NSError *error) {
         self.gifs = [gifs mutableCopy];
@@ -35,8 +36,8 @@
         self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
         [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
         
-        self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]];
-        [self.view insertSubview:self.thirdGifView belowSubview:self.backGifView];
+       // self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]];
+       // [self.view insertSubview:self.thirdGifView belowSubview:self.backGifView];
 
     }];
 }
@@ -100,16 +101,23 @@
     self.frontGifView = self.backGifView;
     self.backGifView = self.thirdGifView;
     self.backGifView.frame = [self backGifViewFrame];
-//    self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]];       // Fade the back card into view.
-//    self.thirdGifView.alpha = 1.f;
+    [self performSelectorInBackground:@selector(setupThirdGifView) withObject:nil];
+    
+}
+
+- (void)setupThirdGifView {
+    self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]];
+   // if((self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]])){       // Fade the back card into view.
+//    self.thirdGifView.alpha = 0.f;
 //    [self.view insertSubview:self.thirdGifView belowSubview:self.backGifView];
 //    [UIView animateWithDuration:0.2
-//                              delay:0.0
-//                            options:UIViewAnimationOptionCurveEaseInOut
-//                         animations:^{
-//                             self.thirdGifView.alpha = 1.f;
-//                         } completion:nil];
-    
+//                          delay:0.0
+//                        options:UIViewAnimationOptionCurveEaseInOut
+//                     animations:^{
+//                         self.thirdGifView.alpha = 1.f;
+//                     } completion:nil];
+
+  //  }
 }
 
 #pragma mark - Internal Methods
@@ -177,15 +185,18 @@
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
 
     nullStateImageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 199, 142)];
-    nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20);
+    nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
     nullStateImageView.contentMode = UIViewContentModeScaleAspectFit;
     nullStateImageView.animatedImage = gifImage;
     [self.view addSubview:nullStateImageView];
     
-    nullStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 30, 200, 100)];
-    nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 20);
-    nullStateLabel.text = @"Oh no!";
+    nullStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 30, 300, 500)];
+    nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 80);
+    nullStateLabel.text = @"Oh no! Looks like we ran out of gifs :(";
     nullStateLabel.font = [UIFont fontWithName:@"Avenir-Roman" size:30];
+    nullStateLabel.textColor = [UIColor darkGrayColor];//[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
+    nullStateLabel.numberOfLines = 5;
+    nullStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
     nullStateLabel.textAlignment = NSTextAlignmentCenter;
 
     [self.view addSubview:nullStateLabel];
