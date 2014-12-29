@@ -22,6 +22,9 @@
 @property (nonatomic, strong) IBOutlet UIView *mainView;
 @property (nonatomic, strong) IBOutlet UILabel *captionLabel;
 
+@property (nonatomic, strong) UIView *likedView;
+@property (nonatomic, strong) UIView *nopeView;
+
 
 - (instancetype)initWithFrame:(CGRect)frame
                        gif:(GSGif *)gsgif
