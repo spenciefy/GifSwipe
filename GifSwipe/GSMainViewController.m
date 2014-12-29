@@ -109,14 +109,8 @@
                             NSLog(@"added gifview:%@", gifView.gif.caption);
                             
                             if(self.gifViews.count > 1 && !self.currentGifView) {
-                                self.frontGifView = self.gifViews[0];
-                                self.frontGifView.alpha = 1;
-                                [self.view addSubview:self.frontGifView];
-                                
-                                self.backGifView = self.gifViews[1];
-                                self.backGifView.alpha = 1;
-                                [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
-                            }
+                                [self loadNewFrontBackViews];
+                                                            }
                         } else {
                             NSLog(@"error: %@", gifView.gif.caption);
                         }
@@ -136,6 +130,23 @@
         }
     });
 }
+
+- (void)loadNewFrontBackViews {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.frontGifView = self.gifViews[0];
+        self.frontGifView.frame = [self frontGifViewFrame];
+        self.frontGifView.alpha = 1;
+        [self.view addSubview:self.frontGifView];
+    
+        self.backGifView = self.gifViews[1];
+        self.backGifView.frame = [self backGifViewFrame];
+        self.backGifView.alpha = 1.f;
+        [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+        
+        [self.gifViews removeObjectAtIndex:0];
+    });
+}
+
 
 #pragma mark - MDCSwipeToChooseDelegate Protocol Methods
 
@@ -174,10 +185,11 @@
 
     } else {
         self.backGifView = nil;
+        [self loadMoreGifViews];
     }
 
     // Fade the back card into view.
-       NSLog(@"front is now: %@, back is now %@", self.frontGifView.gif.caption, self.backGifView.gif.caption);
+    NSLog(@"front is now: %@, back is now %@", self.frontGifView.gif.caption, self.backGifView.gif.caption);
     NSLog(@"number of views in array: %lu", (unsigned long)self.gifViews.count);
 
     

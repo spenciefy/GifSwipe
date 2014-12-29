@@ -25,7 +25,7 @@
 
 - (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit withCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
     
-    NSString *urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/.json?count=%@&limit=%@", from, limit];
+    NSString *urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/new/.json?count=%@&limit=%@", from, limit];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
@@ -36,6 +36,7 @@
     NSURLResponse *urlResponse = nil;
     NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&requestError];
     NSError* error;
+    if(response){
     NSDictionary* json = [NSJSONSerialization JSONObjectWithData:response
                                                          options:kNilOptions
                                                            error:&error];
@@ -51,7 +52,7 @@
             completionBlock(gifs, nil);
         }
     }
-    
+    }
 }
 
 - (GSGif *)gifForJSONPost:(NSDictionary *)jsonPost{
