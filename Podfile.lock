@@ -1,0 +1,30 @@
+PODS:
+  - BlurImageProcessor (1.0.0)
+  - Bolts (1.1.3)
+  - Facebook-iOS-SDK (3.21.1):
+    - Bolts (~> 1.0)
+  - FLAnimatedImage (1.0.7)
+  - MDCSwipeToChoose (0.2.1)
+  - UIImageView-PlayGIF (1.0.2)
+
+DEPENDENCIES:
+  - BlurImageProcessor
+  - Facebook-iOS-SDK
+  - FLAnimatedImage (~> 1.0)
+  - MDCSwipeToChoose (from `https://github.com/spenciefy/MDCSwipeToChoose.git`, commit `983efd2d4c2d3dfa1fcff1316cbb2ad23104eca3`)
+  - UIImageView-PlayGIF (~> 1.0.1)
+
+EXTERNAL SOURCES:
+  MDCSwipeToChoose:
+    :commit: 983efd2d4c2d3dfa1fcff1316cbb2ad23104eca3
+    :git: https://github.com/spenciefy/MDCSwipeToChoose.git
+
+SPEC CHECKSUMS:
+  BlurImageProcessor: 287a860dbf21c75e9d6217ea9676c8112abe5c16
+  Bolts: 3db0a875235e0c9042b013af13af0f00f79b102c
+  Facebook-iOS-SDK: 18c26e86ab25c17854a2ee2a8f60562099c6600f
+  FLAnimatedImage: d9e8422a9e1d8ee9a657b7433b4a9b073ef3efb3
+  MDCSwipeToChoose: a12f0e87c95f635d52777afd42bfd9a40e0e4626
+  UIImageView-PlayGIF: 1b70b8b4d8d7aec4bc09091d16eb21cbdb04ded4
+
+COCOAPODS: 0.34.4

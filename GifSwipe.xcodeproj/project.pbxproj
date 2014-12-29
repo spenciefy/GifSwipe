@@ -7,13 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6B3FBB29B4FE8E4E3D088466 /* libPods-GifSwipe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9F2931C7D1AABD7D1004B0 /* libPods-GifSwipe.a */; };
 		6C886B3C1A510A1800088119 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B3B1A510A1800088119 /* main.m */; };
 		6C886B3F1A510A1800088119 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B3E1A510A1800088119 /* AppDelegate.m */; };
-		6C886B421A510A1800088119 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B411A510A1800088119 /* ViewController.m */; };
 		6C886B451A510A1800088119 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B431A510A1800088119 /* Main.storyboard */; };
 		6C886B471A510A1800088119 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B461A510A1800088119 /* Images.xcassets */; };
 		6C886B4A1A510A1800088119 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B481A510A1800088119 /* LaunchScreen.xib */; };
 		6C886B561A510A1800088119 /* GifSwipeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B551A510A1800088119 /* GifSwipeTests.m */; };
+		6C886B691A510A4100088119 /* GSGif.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B601A510A4100088119 /* GSGif.m */; };
+		6C886B6A1A510A4100088119 /* GSGifManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B621A510A4100088119 /* GSGifManager.m */; };
+		6C886B6B1A510A4100088119 /* GSGifView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B641A510A4100088119 /* GSGifView.m */; };
+		6C886B6C1A510A4100088119 /* GSMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B661A510A4100088119 /* GSMainViewController.m */; };
+		6C886B6D1A510A4100088119 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B681A510A4100088119 /* UIImage+animatedGIF.m */; };
+		6C886B741A511BDE00088119 /* sad.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B731A511BDE00088119 /* sad.gif */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,14 +38,26 @@
 		6C886B3B1A510A1800088119 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6C886B3D1A510A1800088119 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6C886B3E1A510A1800088119 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		6C886B401A510A1800088119 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		6C886B411A510A1800088119 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		6C886B441A510A1800088119 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6C886B461A510A1800088119 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		6C886B491A510A1800088119 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		6C886B4F1A510A1800088119 /* GifSwipeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GifSwipeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C886B541A510A1800088119 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6C886B551A510A1800088119 /* GifSwipeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GifSwipeTests.m; sourceTree = "<group>"; };
+		6C886B5F1A510A4100088119 /* GSGif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSGif.h; sourceTree = "<group>"; };
+		6C886B601A510A4100088119 /* GSGif.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSGif.m; sourceTree = "<group>"; };
+		6C886B611A510A4100088119 /* GSGifManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSGifManager.h; sourceTree = "<group>"; };
+		6C886B621A510A4100088119 /* GSGifManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSGifManager.m; sourceTree = "<group>"; };
+		6C886B631A510A4100088119 /* GSGifView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSGifView.h; sourceTree = "<group>"; };
+		6C886B641A510A4100088119 /* GSGifView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSGifView.m; sourceTree = "<group>"; };
+		6C886B651A510A4100088119 /* GSMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSMainViewController.h; sourceTree = "<group>"; };
+		6C886B661A510A4100088119 /* GSMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSMainViewController.m; sourceTree = "<group>"; };
+		6C886B671A510A4100088119 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
+		6C886B681A510A4100088119 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
+		6C886B731A511BDE00088119 /* sad.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = sad.gif; sourceTree = "<group>"; };
+		C453BAB61BCCA5FF0610F49D /* Pods-GifSwipe.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GifSwipe.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe.debug.xcconfig"; sourceTree = "<group>"; };
+		EB9F2931C7D1AABD7D1004B0 /* libPods-GifSwipe.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GifSwipe.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1C56484DF9AA73908B335E7 /* Pods-GifSwipe.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GifSwipe.release.xcconfig"; path = "Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B3FBB29B4FE8E4E3D088466 /* libPods-GifSwipe.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +85,8 @@
 				6C886B381A510A1800088119 /* GifSwipe */,
 				6C886B521A510A1800088119 /* GifSwipeTests */,
 				6C886B371A510A1800088119 /* Products */,
+				97EB8EEC85882605B9FB9F46 /* Pods */,
+				B3EA9322431D57B6FAF16297 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -83,9 +104,13 @@
 			children = (
 				6C886B3D1A510A1800088119 /* AppDelegate.h */,
 				6C886B3E1A510A1800088119 /* AppDelegate.m */,
-				6C886B401A510A1800088119 /* ViewController.h */,
-				6C886B411A510A1800088119 /* ViewController.m */,
 				6C886B431A510A1800088119 /* Main.storyboard */,
+				6C886B731A511BDE00088119 /* sad.gif */,
+				6C886B711A510AB500088119 /* Controllers */,
+				6C886B701A510AB000088119 /* Views */,
+				6C886B6F1A510AAB00088119 /* Models */,
+				6C886B6E1A510AA700088119 /* Helpers */,
+				6C886B721A510ABA00088119 /* Categories */,
 				6C886B461A510A1800088119 /* Images.xcassets */,
 				6C886B481A510A1800088119 /* LaunchScreen.xib */,
 				6C886B391A510A1800088119 /* Supporting Files */,
@@ -119,6 +144,68 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		6C886B6E1A510AA700088119 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				6C886B611A510A4100088119 /* GSGifManager.h */,
+				6C886B621A510A4100088119 /* GSGifManager.m */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
+		6C886B6F1A510AAB00088119 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6C886B5F1A510A4100088119 /* GSGif.h */,
+				6C886B601A510A4100088119 /* GSGif.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		6C886B701A510AB000088119 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6C886B631A510A4100088119 /* GSGifView.h */,
+				6C886B641A510A4100088119 /* GSGifView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		6C886B711A510AB500088119 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				6C886B651A510A4100088119 /* GSMainViewController.h */,
+				6C886B661A510A4100088119 /* GSMainViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		6C886B721A510ABA00088119 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				6C886B671A510A4100088119 /* UIImage+animatedGIF.h */,
+				6C886B681A510A4100088119 /* UIImage+animatedGIF.m */,
+			);
+			name = Categories;
+			sourceTree = "<group>";
+		};
+		97EB8EEC85882605B9FB9F46 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C453BAB61BCCA5FF0610F49D /* Pods-GifSwipe.debug.xcconfig */,
+				F1C56484DF9AA73908B335E7 /* Pods-GifSwipe.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		B3EA9322431D57B6FAF16297 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EB9F2931C7D1AABD7D1004B0 /* libPods-GifSwipe.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -126,9 +213,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6C886B591A510A1800088119 /* Build configuration list for PBXNativeTarget "GifSwipe" */;
 			buildPhases = (
+				BA033D59CAC1E16B3DE08557 /* Check Pods Manifest.lock */,
 				6C886B321A510A1800088119 /* Sources */,
 				6C886B331A510A1800088119 /* Frameworks */,
 				6C886B341A510A1800088119 /* Resources */,
+				4950B89F9C9CAE5ACAD1C11E /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -202,6 +291,7 @@
 				6C886B451A510A1800088119 /* Main.storyboard in Resources */,
 				6C886B4A1A510A1800088119 /* LaunchScreen.xib in Resources */,
 				6C886B471A510A1800088119 /* Images.xcassets in Resources */,
+				6C886B741A511BDE00088119 /* sad.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,14 +304,51 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		4950B89F9C9CAE5ACAD1C11E /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BA033D59CAC1E16B3DE08557 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		6C886B321A510A1800088119 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C886B421A510A1800088119 /* ViewController.m in Sources */,
+				6C886B6B1A510A4100088119 /* GSGifView.m in Sources */,
+				6C886B6C1A510A4100088119 /* GSMainViewController.m in Sources */,
+				6C886B6A1A510A4100088119 /* GSGifManager.m in Sources */,
+				6C886B691A510A4100088119 /* GSGif.m in Sources */,
 				6C886B3F1A510A1800088119 /* AppDelegate.m in Sources */,
 				6C886B3C1A510A1800088119 /* main.m in Sources */,
+				6C886B6D1A510A4100088119 /* UIImage+animatedGIF.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +468,7 @@
 		};
 		6C886B5A1A510A1800088119 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C453BAB61BCCA5FF0610F49D /* Pods-GifSwipe.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = GifSwipe/Info.plist;
@@ -351,6 +479,7 @@
 		};
 		6C886B5B1A510A1800088119 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1C56484DF9AA73908B335E7 /* Pods-GifSwipe.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = GifSwipe/Info.plist;
@@ -412,6 +541,7 @@
 				6C886B5B1A510A1800088119 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6C886B5C1A510A1800088119 /* Build configuration list for PBXNativeTarget "GifSwipeTests" */ = {
 			isa = XCConfigurationList;
@@ -420,6 +550,7 @@
 				6C886B5E1A510A1800088119 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -1,0 +1,5 @@
+#include "Pods-GifSwipe-UIImageView-PlayGIF.xcconfig"
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Build" "${PODS_ROOT}/Headers/Build/UIImageView-PlayGIF" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/BlurImageProcessor" "${PODS_ROOT}/Headers/Public/Bolts" "${PODS_ROOT}/Headers/Public/FLAnimatedImage" "${PODS_ROOT}/Headers/Public/Facebook-iOS-SDK" "${PODS_ROOT}/Headers/Public/Facebook-iOS-SDK/FacebookSDK" "${PODS_ROOT}/Headers/Public/MDCSwipeToChoose" "${PODS_ROOT}/Headers/Public/UIImageView-PlayGIF"
+OTHER_LDFLAGS = ${PODS_GIFSWIPE_UIIMAGEVIEW_PLAYGIF_OTHER_LDFLAGS} -ObjC
+PODS_ROOT = ${SRCROOT}
