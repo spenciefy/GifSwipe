@@ -13,6 +13,7 @@
 @interface GSMainViewController ()
 
 @property (nonatomic, strong) NSMutableArray *gifs;
+@property (nonatomic, strong) NSMutableArray *gifViews;
 
 @end
 
@@ -36,10 +37,17 @@
         self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
         [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
         
-       // self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]];
-       // [self.view insertSubview:self.thirdGifView belowSubview:self.backGifView];
+        self.thirdGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+        self.fourthGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+//        self.fifthGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+//        self.sixthGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+//        self.seventhGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+//        self.eigthGifView= [self popGifViewWithFrame:[self backGifViewFrame]];
+        [NSTimer scheduledTimerWithTimeInterval:5.0 target:nil selector:@selector(loadMoreGifViews) userInfo:nil repeats:YES];
+
 
     }];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -77,6 +85,15 @@
     
     }
 }
+
+- (void)loadMoreGifViews {
+    if(self.gifViews.count > 20) {
+        for(int i = 0; i < 10; i++) {
+            [self.gifViews addObject:[self fetchNextGifView]];
+        }
+    }
+}
+
 #pragma mark - MDCSwipeToChooseDelegate Protocol Methods
 
 // This is called when a user didn't fully swipe left or right.
@@ -86,49 +103,74 @@
 
 // This is called then a user swipes the view fully left or right.
 - (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {
-    // MDCSwipeToChooseView shows "NOPE" on swipes to the left,
-    // and "LIKED" on swipes to the right.
-    if (direction == MDCSwipeDirectionLeft) {
-        NSLog(@"You noped %@.", self.currentGif.gifLink);
-    } else {
-        NSLog(@"You liked %@.", self.currentGif.gifLink);
-    }
+    NSLog(@"You swiped %@.", self.currentGif.caption);
     
     // MDCSwipeToChooseView removes the view from the view hierarchy
     // after it is swiped (this behavior can be customized via the
     // MDCSwipeOptions class). Since the front card view is gone, we
     // move the back card to the front, and create a new back card.
+   
+
+
     self.frontGifView = self.backGifView;
     self.backGifView = self.thirdGifView;
     self.backGifView.frame = [self backGifViewFrame];
-    [self performSelectorInBackground:@selector(setupThirdGifView) withObject:nil];
+    
+    self.thirdGifView = self.fourthGifView;
+    self.fourthGifView = self.fifthGifView;
+    self.fifthGifView = self.sixthGifView;
+    self.sixthGifView = self.seventhGifView;
+    self.seventhGifView = self.eigthGifView;
+    [self loadNextGifViews];
+
+
+    // Fade the back card into view.
+    self.backGifView.alpha = 0.f;
+    [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+//    [self.view sendSubviewToBack:self.thirdGifView];
+    [UIView animateWithDuration:0.5
+                          delay:0.0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         self.backGifView.alpha = 1.f;
+                     } completion:nil];
+    NSLog(@"front is now: %@, back is now %@, third is now: %@, fourth is now: %@", self.frontGifView.gif.caption, self.backGifView.gif.caption, self.thirdGifView.gif.caption, self.fourthGifView.gif.caption);
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+//            self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]];
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                self.thirdGifView.alpha = 0.f;
+//                [self.view insertSubview:self.thirdGifView belowSubview:self.backGifView];
+//                [UIView animateWithDuration:0.2
+//                                      delay:0.0
+//                                    options:UIViewAnimationOptionCurveEaseInOut
+//                                 animations:^{
+//                                     self.thirdGifView.alpha = 1.f;
+//                                 } completion:nil];
+//            });
+//        });
+        //[self performSelectorInBackground:@selector(setupThirdGifView) withObject:nil];
+  //  }
+
     
 }
 
-- (void)setupThirdGifView {
-    self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]];
-   // if((self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]])){       // Fade the back card into view.
-//    self.thirdGifView.alpha = 0.f;
-//    [self.view insertSubview:self.thirdGifView belowSubview:self.backGifView];
-//    [UIView animateWithDuration:0.2
-//                          delay:0.0
-//                        options:UIViewAnimationOptionCurveEaseInOut
-//                     animations:^{
-//                         self.thirdGifView.alpha = 1.f;
-//                     } completion:nil];
+- (void)loadNextGifViews {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+    self.eigthGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+        NSLog(@"eigth is now: %@",self.eigthGifView.gif.caption);
 
-  //  }
+    });
 }
 
 #pragma mark - Internal Methods
 
-- (void)setfrontGifView:(GSGifView *)frontGifView {
+- (void)setFrontGifView:(GSGifView *)frontGifView {
     _frontGifView = frontGifView;
     self.currentGif = frontGifView.gif;
 }
 
 - (GSGifView *)popGifViewWithFrame:(CGRect)frame {
-    if ([self.gifs count] == 0) {
+    if (self.gifs.count == 0) {
         return nil;
     }
 
@@ -141,11 +183,29 @@
                                              frame.origin.y - (state.thresholdRatio * 10.f),
                                              CGRectGetWidth(frame),
                                              CGRectGetHeight(frame));
-        CGRect thirdFrame = [self thirdGifViewFrame];
-        self.thirdGifView.frame = CGRectMake(thirdFrame.origin.x,
-                                            thirdFrame.origin.y - (state.thresholdRatio * 7.f),
-                                            CGRectGetWidth(thirdFrame),
-                                            CGRectGetHeight(thirdFrame));
+    };
+    
+    GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:self.gifs[0] options:options];
+    [self.gifs removeObjectAtIndex:0];
+    return gifView;
+}
+
+
+- (GSGifView *)fetchNextGifView {
+    CGRect frame = [self backGifViewFrame];
+    if (self.gifs.count == 0) {
+        return nil;
+    }
+    
+    MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
+    options.delegate = self;
+    options.threshold = 160.f;
+    options.onPan = ^(MDCPanState *state){
+        CGRect frame = [self backGifViewFrame];
+        self.backGifView.frame = CGRectMake(frame.origin.x,
+                                            frame.origin.y - (state.thresholdRatio * 10.f),
+                                            CGRectGetWidth(frame),
+                                            CGRectGetHeight(frame));
     };
     
     GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:self.gifs[0] options:options];
@@ -171,14 +231,6 @@
                       CGRectGetHeight(frontFrame));
 }
 
-- (CGRect)thirdGifViewFrame {
-    CGRect backFrame = [self backGifViewFrame];
-    return CGRectMake(backFrame.origin.x,
-                      backFrame.origin.y + 10.f,
-                      CGRectGetWidth(backFrame),
-                      CGRectGetHeight(backFrame));
-}
-
 - (void)setupNullState{
     NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
     NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
@@ -188,7 +240,7 @@
     nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
     nullStateImageView.contentMode = UIViewContentModeScaleAspectFit;
     nullStateImageView.animatedImage = gifImage;
-    [self.view addSubview:nullStateImageView];
+  //  [self.view addSubview:nullStateImageView];
     
     nullStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 30, 300, 500)];
     nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 80);
@@ -199,7 +251,7 @@
     nullStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
     nullStateLabel.textAlignment = NSTextAlignmentCenter;
 
-    [self.view addSubview:nullStateLabel];
+    //[self.view addSubview:nullStateLabel];
 
 }
 

@@ -54,10 +54,10 @@
     _backgroundImageView.clipsToBounds = YES;
     _backgroundImageView.contentMode = UIViewContentModeScaleToFill;
     UIImage *backgroundImage =[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.gif.gifPreviewLink]]];
-    
+    _backgroundImageView.image = backgroundImage;
     ALDBlurImageProcessor *avatarBlur = [[ALDBlurImageProcessor alloc] initWithImage:backgroundImage];
     [avatarBlur asyncBlurWithRadius: 5
-                         iterations: 7
+                         iterations:5
                        successBlock:^(UIImage *blurredImage) {
                            _backgroundImageView.image = blurredImage;
                        }
@@ -65,7 +65,6 @@
                              NSLog( @"Error code: %d", [errorCode intValue] );
                          }];
     [self addSubview:_backgroundImageView];
-
     
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.gif.gifLink]]];
     
