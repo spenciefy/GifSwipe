@@ -30,13 +30,13 @@
     [super viewDidLoad];
     
     [self setupNullState];
+    currentlyAddingViews = NO;
+
     if(![self hasNetwork]) {
         [self setNullStateNoConnection];
     } else {
         [self setNullStateLoading];
-        nullStateLabel.text = @"Finding some gifs for you :)";
-        currentlyAddingViews = NO;
-        [self setupMainView];
+        nullStateLabel.text = @"Loading a batch of gifs for you :)";
     }
 }
 
@@ -81,6 +81,10 @@
 
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+   
+    if([self hasNetwork]) {
+        [self setupMainView];
+    }
     [self becomeFirstResponder];
 }
 
