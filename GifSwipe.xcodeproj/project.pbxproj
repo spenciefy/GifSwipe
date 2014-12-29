@@ -22,6 +22,8 @@
 		6C886B741A511BDE00088119 /* sad.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B731A511BDE00088119 /* sad.gif */; };
 		6C886B771A51590000088119 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B761A51590000088119 /* Reachability.m */; };
 		6C886B791A515D1900088119 /* searching.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B781A515D1900088119 /* searching.gif */; };
+		B258CB4D1A5167A6007BA230 /* GSLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB4B1A5167A6007BA230 /* GSLoadingView.m */; };
+		B258CB4E1A5167A6007BA230 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = B258CB4C1A5167A6007BA230 /* loading.gif */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,9 @@
 		6C886B751A51590000088119 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		6C886B761A51590000088119 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		6C886B781A515D1900088119 /* searching.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = searching.gif; sourceTree = "<group>"; };
+		B258CB4A1A5167A6007BA230 /* GSLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSLoadingView.h; sourceTree = "<group>"; };
+		B258CB4B1A5167A6007BA230 /* GSLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSLoadingView.m; sourceTree = "<group>"; };
+		B258CB4C1A5167A6007BA230 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
 		C453BAB61BCCA5FF0610F49D /* Pods-GifSwipe.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GifSwipe.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe.debug.xcconfig"; sourceTree = "<group>"; };
 		EB9F2931C7D1AABD7D1004B0 /* libPods-GifSwipe.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GifSwipe.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1C56484DF9AA73908B335E7 /* Pods-GifSwipe.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GifSwipe.release.xcconfig"; path = "Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe.release.xcconfig"; sourceTree = "<group>"; };
@@ -112,6 +117,7 @@
 				6C886B431A510A1800088119 /* Main.storyboard */,
 				6C886B731A511BDE00088119 /* sad.gif */,
 				6C886B781A515D1900088119 /* searching.gif */,
+				B258CB4C1A5167A6007BA230 /* loading.gif */,
 				6C886B711A510AB500088119 /* Controllers */,
 				6C886B701A510AB000088119 /* Views */,
 				6C886B6F1A510AAB00088119 /* Models */,
@@ -171,6 +177,8 @@
 		6C886B701A510AB000088119 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B258CB4A1A5167A6007BA230 /* GSLoadingView.h */,
+				B258CB4B1A5167A6007BA230 /* GSLoadingView.m */,
 				6C886B631A510A4100088119 /* GSGifView.h */,
 				6C886B641A510A4100088119 /* GSGifView.m */,
 			);
@@ -299,6 +307,7 @@
 				6C886B451A510A1800088119 /* Main.storyboard in Resources */,
 				6C886B791A515D1900088119 /* searching.gif in Resources */,
 				6C886B4A1A510A1800088119 /* LaunchScreen.xib in Resources */,
+				B258CB4E1A5167A6007BA230 /* loading.gif in Resources */,
 				6C886B471A510A1800088119 /* Images.xcassets in Resources */,
 				6C886B741A511BDE00088119 /* sad.gif in Resources */,
 			);
@@ -355,6 +364,7 @@
 				6C886B6C1A510A4100088119 /* GSMainViewController.m in Sources */,
 				6C886B771A51590000088119 /* Reachability.m in Sources */,
 				6C886B6A1A510A4100088119 /* GSGifManager.m in Sources */,
+				B258CB4D1A5167A6007BA230 /* GSLoadingView.m in Sources */,
 				6C886B691A510A4100088119 /* GSGif.m in Sources */,
 				6C886B3F1A510A1800088119 /* AppDelegate.m in Sources */,
 				6C886B3C1A510A1800088119 /* main.m in Sources */,
