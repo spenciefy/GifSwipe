@@ -20,6 +20,8 @@
 		6C886B6C1A510A4100088119 /* GSMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B661A510A4100088119 /* GSMainViewController.m */; };
 		6C886B6D1A510A4100088119 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B681A510A4100088119 /* UIImage+animatedGIF.m */; };
 		6C886B741A511BDE00088119 /* sad.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B731A511BDE00088119 /* sad.gif */; };
+		6C886B771A51590000088119 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B761A51590000088119 /* Reachability.m */; };
+		6C886B791A515D1900088119 /* searching.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B781A515D1900088119 /* searching.gif */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +57,9 @@
 		6C886B671A510A4100088119 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
 		6C886B681A510A4100088119 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		6C886B731A511BDE00088119 /* sad.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = sad.gif; sourceTree = "<group>"; };
+		6C886B751A51590000088119 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		6C886B761A51590000088119 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		6C886B781A515D1900088119 /* searching.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = searching.gif; sourceTree = "<group>"; };
 		C453BAB61BCCA5FF0610F49D /* Pods-GifSwipe.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GifSwipe.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe.debug.xcconfig"; sourceTree = "<group>"; };
 		EB9F2931C7D1AABD7D1004B0 /* libPods-GifSwipe.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GifSwipe.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1C56484DF9AA73908B335E7 /* Pods-GifSwipe.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GifSwipe.release.xcconfig"; path = "Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe.release.xcconfig"; sourceTree = "<group>"; };
@@ -106,6 +111,7 @@
 				6C886B3E1A510A1800088119 /* AppDelegate.m */,
 				6C886B431A510A1800088119 /* Main.storyboard */,
 				6C886B731A511BDE00088119 /* sad.gif */,
+				6C886B781A515D1900088119 /* searching.gif */,
 				6C886B711A510AB500088119 /* Controllers */,
 				6C886B701A510AB000088119 /* Views */,
 				6C886B6F1A510AAB00088119 /* Models */,
@@ -201,6 +207,8 @@
 		B3EA9322431D57B6FAF16297 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6C886B751A51590000088119 /* Reachability.h */,
+				6C886B761A51590000088119 /* Reachability.m */,
 				EB9F2931C7D1AABD7D1004B0 /* libPods-GifSwipe.a */,
 			);
 			name = Frameworks;
@@ -289,6 +297,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6C886B451A510A1800088119 /* Main.storyboard in Resources */,
+				6C886B791A515D1900088119 /* searching.gif in Resources */,
 				6C886B4A1A510A1800088119 /* LaunchScreen.xib in Resources */,
 				6C886B471A510A1800088119 /* Images.xcassets in Resources */,
 				6C886B741A511BDE00088119 /* sad.gif in Resources */,
@@ -344,6 +353,7 @@
 			files = (
 				6C886B6B1A510A4100088119 /* GSGifView.m in Sources */,
 				6C886B6C1A510A4100088119 /* GSMainViewController.m in Sources */,
+				6C886B771A51590000088119 /* Reachability.m in Sources */,
 				6C886B6A1A510A4100088119 /* GSGifManager.m in Sources */,
 				6C886B691A510A4100088119 /* GSGif.m in Sources */,
 				6C886B3F1A510A1800088119 /* AppDelegate.m in Sources */,

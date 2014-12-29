@@ -8,6 +8,7 @@ pod "MDCSwipeToChoose" , :git => 'https://github.com/spenciefy/MDCSwipeToChoose.
 pod "Facebook-iOS-SDK"
 pod "BlurImageProcessor"
 pod 'FLAnimatedImage', '~> 1.0'
+pod 'Reveal-iOS-SDK', :configurations => ['Debug']
 
 end
 

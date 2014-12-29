@@ -12,6 +12,6 @@
 
 + (GSGifManager *)sharedInstance;
 
-- (void)fetchGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock;
+- (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit withCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock;
 
 @end

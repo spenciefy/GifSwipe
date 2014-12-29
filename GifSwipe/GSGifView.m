@@ -29,7 +29,9 @@
         self.gif = gsgif;
         [self setupView];
         [self constructImageView];
+        dispatch_async(dispatch_get_main_queue(), ^{
         [self constructMainView];
+        });
         [self setupSwipeToChoose];
     }
     return self;

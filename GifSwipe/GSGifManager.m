@@ -23,9 +23,9 @@
     return _sharedInstance;
 }
 
-- (void)fetchGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
+- (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit withCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
     
-    NSString *urlString = @"http://www.reddit.com/r/gifs/new/.json?count=1&limit=20";
+    NSString *urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/.json?count=%@&limit=%@", from, limit];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData

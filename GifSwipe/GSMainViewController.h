@@ -12,7 +12,7 @@
 
 @interface GSMainViewController : UIViewController <MDCSwipeToChooseDelegate>
 
-@property (nonatomic, strong) GSGif *currentGif;
+@property (nonatomic, strong) GSGifView *currentGifView;
 @property (nonatomic, strong) GSGifView *frontGifView;
 @property (nonatomic, strong) GSGifView *backGifView;
 @property (nonatomic, strong) GSGifView *thirdGifView;

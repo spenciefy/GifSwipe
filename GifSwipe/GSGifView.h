@@ -17,10 +17,10 @@
 
 @property (nonatomic, strong) GSGif *gif;
 
-@property (nonatomic, strong) FLAnimatedImageView *gifImageView;
-@property (nonatomic, strong) UIImageView *backgroundImageView;
-@property (nonatomic, strong) UIView *mainView;
-@property (nonatomic, strong) UILabel *captionLabel;
+@property (nonatomic, strong) IBOutlet FLAnimatedImageView *gifImageView;
+@property (nonatomic, strong) IBOutlet  UIImageView *backgroundImageView;
+@property (nonatomic, strong) IBOutlet UIView *mainView;
+@property (nonatomic, strong) IBOutlet UILabel *captionLabel;
 
 
 - (instancetype)initWithFrame:(CGRect)frame

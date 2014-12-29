@@ -9,45 +9,63 @@
 #import "GSMainViewController.h"
 #import "GSGifManager.h"
 #import <MDCSwipeToChoose/MDCSwipeToChoose.h>
+#import "Reachability.h"
 
 @interface GSMainViewController ()
 
 @property (nonatomic, strong) NSMutableArray *gifs;
 @property (nonatomic, strong) NSMutableArray *gifViews;
+@property (nonatomic, strong) NSMutableArray *addedGifIDs;
 
 @end
 
 @implementation GSMainViewController {
-    BOOL swipeToRight;
+    BOOL currentlyAddingViews;
+    int gifCount;
     UILabel *nullStateLabel;
     FLAnimatedImageView *nullStateImageView;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self setupNullState];
-    //nullStateLabel.text = @"You're not connected to the internet :(";
+    if(![self hasNetwork]) {
+        [self setNullStateNoConnection];
+    } else {
+        [self setNullStateLoading];
+        nullStateLabel.text = @"Finding some gifs for you :)";
+        currentlyAddingViews = NO;
+        [self setupMainView];
+    }
+}
 
-    swipeToRight = NO;
-    [[GSGifManager sharedInstance] fetchGifsWithCompletionBlock:^(NSArray *gifs, NSError *error) {
+- (void)setupMainView {
+    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"50" withCompletionBlock:^(NSArray *gifs, NSError *error) {
+        gifCount = 50;
         self.gifs = [gifs mutableCopy];
+        
         self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
         [self.view addSubview:self.frontGifView];
         
-        self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+        self.backGifView = [self fetchNextGifView];
         [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+        self.addedGifIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
+        self.gifViews = [@[self.backGifView] mutableCopy];
         
-        self.thirdGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
-        self.fourthGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
-//        self.fifthGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
-//        self.sixthGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
-//        self.seventhGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
-//        self.eigthGifView= [self popGifViewWithFrame:[self backGifViewFrame]];
-        [NSTimer scheduledTimerWithTimeInterval:5.0 target:nil selector:@selector(loadMoreGifViews) userInfo:nil repeats:YES];
-
-
+        for(int i = 0; i < 5; i++) {
+            GSGifView *gifView = [self fetchNextGifView];
+            if(gifView && ![self.addedGifIDs containsObject:gifView.gif.gifID]) {
+                [self.addedGifIDs addObject:gifView.gif.gifID];
+                [self.gifViews addObject:gifView];
+                NSLog(@"added gifview:%@", gifView.gif.caption);
+            } else {
+                NSLog(@"error: %@", gifView.gif.caption);
+            }
+        }
+        
+        [self loadMoreGifViews];
     }];
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -73,100 +91,103 @@
 {
     if (motion == UIEventSubtypeMotionShake)
     {
-        NSLog(@"lol shake");
-        if(swipeToRight) {
-            [self.frontGifView mdc_swipe:MDCSwipeDirectionRight];
-            swipeToRight = NO;
-        }
-        else {
-            [self.frontGifView mdc_swipe:MDCSwipeDirectionLeft];
-            swipeToRight = YES;
-        }
-    
+        [self.frontGifView mdc_swipe:MDCSwipeDirectionRight];
     }
 }
 
 - (void)loadMoreGifViews {
-    if(self.gifViews.count > 20) {
-        for(int i = 0; i < 10; i++) {
-            [self.gifViews addObject:[self fetchNextGifView]];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        if(self.gifs.count >= 20 && !currentlyAddingViews) {
+            if(self.gifViews.count < 10) {
+                currentlyAddingViews = YES;
+                for(int i = 0; i < 15; i++) {
+                     GSGifView *gifView;
+                        gifView = [self fetchNextGifView];
+                        if(gifView && ![self.addedGifIDs containsObject:gifView.gif.gifID]) {
+                            [self.addedGifIDs addObject:gifView.gif.gifID];
+                            [self.gifViews addObject:gifView];
+                            NSLog(@"added gifview:%@", gifView.gif.caption);
+                            
+                            if(self.gifViews.count > 1 && !self.currentGifView) {
+                                self.frontGifView = self.gifViews[0];
+                                self.frontGifView.alpha = 1;
+                                [self.view addSubview:self.frontGifView];
+                                
+                                self.backGifView = self.gifViews[1];
+                                self.backGifView.alpha = 1;
+                                [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                            }
+                        } else {
+                            NSLog(@"error: %@", gifView.gif.caption);
+                        }
+                        if(i == 14) {
+                            currentlyAddingViews = NO;
+                            [self loadMoreGifViews];
+                        }
+                }
+            }
+        } else {
+            NSString *gifCountString = [NSString stringWithFormat:@"%i", gifCount];
+            [[GSGifManager sharedInstance] fetchGifsFrom:gifCountString limit:@"20" withCompletionBlock:^(NSArray *gifs, NSError *error) {
+                gifCount += 50;
+                self.gifs = [gifs mutableCopy];
+                [self loadMoreGifViews];
+            }];
         }
-    }
+    });
 }
 
 #pragma mark - MDCSwipeToChooseDelegate Protocol Methods
 
 // This is called when a user didn't fully swipe left or right.
 - (void)viewDidCancelSwipe:(UIView *)view {
-    NSLog(@"You couldn't decide on %@.", self.currentGif.gifLink);
+    NSLog(@"You couldn't decide on %@.", self.currentGifView.gif.caption);
 }
 
 // This is called then a user swipes the view fully left or right.
 - (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {
-    NSLog(@"You swiped %@.", self.currentGif.caption);
+    NSLog(@"You swiped %@.", self.currentGifView.gif.caption);
     
     // MDCSwipeToChooseView removes the view from the view hierarchy
     // after it is swiped (this behavior can be customized via the
     // MDCSwipeOptions class). Since the front card view is gone, we
     // move the back card to the front, and create a new back card.
-   
-
-
-    self.frontGifView = self.backGifView;
-    self.backGifView = self.thirdGifView;
-    self.backGifView.frame = [self backGifViewFrame];
+    if(!self.backGifView) {
+        self.currentGifView = nil;
+    }
     
-    self.thirdGifView = self.fourthGifView;
-    self.fourthGifView = self.fifthGifView;
-    self.fifthGifView = self.sixthGifView;
-    self.sixthGifView = self.seventhGifView;
-    self.seventhGifView = self.eigthGifView;
-    [self loadNextGifViews];
+    if([self.gifViews count] > 0){
+        [self.gifViews removeObjectAtIndex:0];
+        self.frontGifView = self.backGifView;
+    }
+    if([self.gifViews count] > 0){
+        self.backGifView = self.gifViews[0];
+        self.backGifView.frame = [self backGifViewFrame];
+        self.backGifView.alpha = 0.f;
+        [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+        [UIView animateWithDuration:0.5
+                              delay:0.0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             self.backGifView.alpha = 1.f;
+                         } completion:nil];
 
+    } else {
+        self.backGifView = nil;
+    }
 
     // Fade the back card into view.
-    self.backGifView.alpha = 0.f;
-    [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
-//    [self.view sendSubviewToBack:self.thirdGifView];
-    [UIView animateWithDuration:0.5
-                          delay:0.0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         self.backGifView.alpha = 1.f;
-                     } completion:nil];
-    NSLog(@"front is now: %@, back is now %@, third is now: %@, fourth is now: %@", self.frontGifView.gif.caption, self.backGifView.gif.caption, self.thirdGifView.gif.caption, self.fourthGifView.gif.caption);
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-//            self.thirdGifView = [self popGifViewWithFrame:[self thirdGifViewFrame]];
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                self.thirdGifView.alpha = 0.f;
-//                [self.view insertSubview:self.thirdGifView belowSubview:self.backGifView];
-//                [UIView animateWithDuration:0.2
-//                                      delay:0.0
-//                                    options:UIViewAnimationOptionCurveEaseInOut
-//                                 animations:^{
-//                                     self.thirdGifView.alpha = 1.f;
-//                                 } completion:nil];
-//            });
-//        });
-        //[self performSelectorInBackground:@selector(setupThirdGifView) withObject:nil];
-  //  }
+       NSLog(@"front is now: %@, back is now %@", self.frontGifView.gif.caption, self.backGifView.gif.caption);
+    NSLog(@"number of views in array: %lu", (unsigned long)self.gifViews.count);
 
     
-}
-
-- (void)loadNextGifViews {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-    self.eigthGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
-        NSLog(@"eigth is now: %@",self.eigthGifView.gif.caption);
-
-    });
 }
 
 #pragma mark - Internal Methods
 
 - (void)setFrontGifView:(GSGifView *)frontGifView {
     _frontGifView = frontGifView;
-    self.currentGif = frontGifView.gif;
+    self.currentGifView = frontGifView;
 }
 
 - (GSGifView *)popGifViewWithFrame:(CGRect)frame {
@@ -184,7 +205,6 @@
                                              CGRectGetWidth(frame),
                                              CGRectGetHeight(frame));
     };
-    
     GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:self.gifs[0] options:options];
     [self.gifs removeObjectAtIndex:0];
     return gifView;
@@ -232,27 +252,55 @@
 }
 
 - (void)setupNullState{
-    NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
-    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
-    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
-
     nullStateImageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 199, 142)];
     nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
     nullStateImageView.contentMode = UIViewContentModeScaleAspectFit;
-    nullStateImageView.animatedImage = gifImage;
-  //  [self.view addSubview:nullStateImageView];
+    [self.view addSubview:nullStateImageView];
     
     nullStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 30, 300, 500)];
     nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 80);
-    nullStateLabel.text = @"Oh no! Looks like we ran out of gifs :(";
     nullStateLabel.font = [UIFont fontWithName:@"Avenir-Roman" size:30];
     nullStateLabel.textColor = [UIColor darkGrayColor];//[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
     nullStateLabel.numberOfLines = 5;
     nullStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
     nullStateLabel.textAlignment = NSTextAlignmentCenter;
 
-    //[self.view addSubview:nullStateLabel];
+    [self.view addSubview:nullStateLabel];
+    [self.view sendSubviewToBack:nullStateImageView];
+    [self.view sendSubviewToBack:nullStateLabel];
 
+}
+
+- (void)setNullStateLoading {
+    nullStateLabel.text = @"Finding some more gifs for you :)";
+    
+    nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
+    nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
+    NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
+    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+    nullStateImageView.animatedImage = gifImage;
+
+}
+
+- (void)setNullStateNoConnection {
+    nullStateLabel.text = @"You're not connected to the internet :(";
+    NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
+    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+    nullStateImageView.animatedImage = gifImage;
+
+}
+
+- (BOOL)hasNetwork {
+    Reachability *myNetwork = [Reachability reachabilityWithHostname:@"google.com"];
+    NetworkStatus myStatus = [myNetwork currentReachabilityStatus];
+    
+    if(myStatus == NotReachable) {
+        return NO;
+    } else{
+        return YES;
+    }
 }
 
 
