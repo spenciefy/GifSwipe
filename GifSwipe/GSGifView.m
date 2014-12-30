@@ -69,6 +69,7 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
         [avatarBlur asyncBlurWithRadius: 5
                              iterations:5
                            successBlock:^(UIImage *blurredImage) {
+                               self.gif.blurredBackroundImage = blurredImage;
                                _backgroundImageView.image = blurredImage;
                            }
                              errorBlock:^(NSNumber *errorCode)  {

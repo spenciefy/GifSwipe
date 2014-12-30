@@ -31,7 +31,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     currentlyAddingViews = NO;
     
     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
@@ -46,47 +46,55 @@
 
 - (void)setupMainView {
 #warning temporarily commented out so its easier to load stuff... overlap
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    NSData *data = [defaults objectForKey:@"displayedGifIDs"];
-//    if(data) {
-//    [GSGifManager sharedInstance].displayedGifIDs = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-//    NSLog(@"loaded displayedGifIDs: %@",  [GSGifManager sharedInstance].displayedGifIDs);
-//    }
-
+    //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    //    NSData *data = [defaults objectForKey:@"displayedGifIDs"];
+    //    if(data) {
+    //    [GSGifManager sharedInstance].displayedGifIDs = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    //    NSLog(@"loaded displayedGifIDs: %@",  [GSGifManager sharedInstance].displayedGifIDs);
+    //    }
+    
     [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"20" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
-            if(!error){
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                NSLog(@"Got first batch of gifs: %@", [GSGifManager sharedInstance].gifs);
+        if(!error){
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                NSLog(@"Got first batch of gifs: %lu", (unsigned long)[GSGifManager sharedInstance].gifs.count);
                 gifCount = 20;
                 if([GSGifManager sharedInstance].gifs.count < 5) {
+                    NSLog(@"Loading more gif views because not enough gifs found");
                     [self loadMoreGifViews];
                 }
+                //Load front and back views
                 self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
+                self.backGifView = [self fetchNextBackGifView];
                 
-                self.backGifView = [self fetchNextGifView];
                 [self.addedGifViewIDs addObject:self.frontGifView.gif.gifID];
                 [self.addedGifViewIDs addObject:self.backGifView.gif.gifID];
-
+                
                 [self.gifViews addObject:self.backGifView];
-                    
+                NSLog(@"Loaded front and back gif views: %@, %@", self.frontGifView.gif.caption, self.backGifView.gif.caption);
+                //Load liked gifs from defaults
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 self.likedGifs = [NSKeyedUnarchiver unarchiveObjectWithData:[defaults objectForKey:@"likedGifs"]];
-                    if(!self.likedGifs) self.likedGifs = [[NSMutableArray alloc] init];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.frontGifView.alpha = 0;
-                self.backGifView.alpha = 0;
-                [self.view addSubview:self.frontGifView];
-                [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
-                
-                [UIView animateWithDuration:0.3f animations:^{
-                    self.frontGifView.alpha = 1;
-                    self.backGifView.alpha = 1;
-                }];
-                [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
-                [self.navigationItem.leftBarButtonItem setEnabled:YES];
-            });
+                if(!self.likedGifs) {
+                    self.likedGifs = [[NSMutableArray alloc] init];
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSLog(@"Updating UI now");
+                    //Update UI on main thread
+                    self.frontGifView.alpha = 0;
+                    self.backGifView.alpha = 0;
+                    [self.view addSubview:self.frontGifView];
+                    [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                    
+                    [UIView animateWithDuration:0.3f animations:^{
+                        self.frontGifView.alpha = 1;
+                        self.backGifView.alpha = 1;
+                    }];
+                    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+                    [self.navigationItem.leftBarButtonItem setEnabled:YES];
+                });
                 for(int i = 0; i < 5; i++) {
-                    GSGifView *gifView = [self fetchNextGifView];
+                    NSLog(@"now loading 5 more gifviews");
+                    GSGifView *gifView = [self fetchNextBackGifView];
                     if(gifView && ![self.addedGifViewIDs containsObject:gifView.gif.gifID]) {
                         [self.addedGifViewIDs addObject:gifView.gif.gifID];
                         [self.gifViews addObject:gifView];
@@ -114,15 +122,15 @@
     [super viewDidAppear:animated];
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-
-    [self setupNullState];
-    if([self hasNetwork]) {
-        [self setupMainView];
-    } else {
-        [self setNullStateNoConnection];
-    }
-            
-    [self becomeFirstResponder];
+        
+        [self setupNullState];
+        if([self hasNetwork]) {
+            [self setupMainView];
+        } else {
+            [self setNullStateNoConnection];
+        }
+        
+        [self becomeFirstResponder];
     });
 }
 
@@ -147,11 +155,11 @@
                 if(self.gifViews.count < 10) {
                     currentlyAddingViews = YES;
                     for(int i = 0; i < 25; i++) {
-                        GSGifView *gifView = [self fetchNextGifView];
+                        GSGifView *gifView = [self fetchNextBackGifView];
                         if(gifView) {
                             [self.gifViews addObject:gifView];
                             NSLog(@"added gifview:%@", gifView.gif.caption);
-                     
+                            
                             if(self.gifViews.count > 1 && !self.currentGifView) {
                                 [self loadNewFrontBackViews];
                             }
@@ -182,7 +190,7 @@
         self.frontGifView.frame = [self frontGifViewFrame];
         self.frontGifView.alpha = 0.f;
         [self.view addSubview:self.frontGifView];
-    
+        
         self.backGifView = self.gifViews[1];
         self.backGifView.frame = [self backGifViewFrame];
         self.backGifView.alpha = 0.f;
@@ -206,11 +214,11 @@
 }
 
 // This is called then a user swipes the view fully left or right.
-- (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {    
+- (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {
     if (direction == MDCSwipeDirectionLeft) {
         NSLog(@"You noped %@.", self.currentGifView.gif.caption);
     } else {
-        [self.likedGifs addObject:self.currentGifView];
+        [self.likedGifs addObject:self.currentGifView.gif];
         NSLog(@"You liked %@.", self.currentGifView.gif.caption);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [self.likedGifs mutableCopy]];
@@ -240,12 +248,12 @@
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:data forKey:@"displayedGifIDs"];
             [[NSUserDefaults standardUserDefaults] synchronize];
-          //  NSLog(@"Saved displayedGifIDs in userdefaults: %@", [GSGifManager sharedInstance].displayedGifIDs);
+            //  NSLog(@"Saved displayedGifIDs in userdefaults: %@", [GSGifManager sharedInstance].displayedGifIDs);
         }
         self.frontGifView = self.backGifView;
     }
     if([self.gifViews count] > 0){
-               self.backGifView = self.gifViews[0];
+        self.backGifView = self.gifViews[0];
         self.backGifView.frame = [self backGifViewFrame];
         self.backGifView.alpha = 0.f;
         [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
@@ -255,16 +263,16 @@
                          animations:^{
                              self.backGifView.alpha = 1.f;
                          } completion:nil];
-
+        
     } else {
         self.backGifView = nil;
         [self loadMoreGifViews];
     }
-
+    
     // Fade the back card into view.
     NSLog(@"front is now: %@, back is now %@", self.frontGifView.gif.caption, self.backGifView.gif.caption);
     NSLog(@"number of views in array: %lu", (unsigned long)self.gifViews.count);
-
+    
     
 }
 
@@ -279,16 +287,16 @@
     if ([GSGifManager sharedInstance].gifs.count == 0) {
         return nil;
     }
-
+    
     MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
     options.delegate = self;
     options.threshold = 160.f;
     options.onPan = ^(MDCPanState *state){
         CGRect frame = [self backGifViewFrame];
         self.backGifView.frame = CGRectMake(frame.origin.x,
-                                             frame.origin.y - (state.thresholdRatio * 10.f),
-                                             CGRectGetWidth(frame),
-                                             CGRectGetHeight(frame));
+                                            frame.origin.y - (state.thresholdRatio * 10.f),
+                                            CGRectGetWidth(frame),
+                                            CGRectGetHeight(frame));
     };
     options.likedText = @"like";
     options.nopeText = @"nope";
@@ -301,7 +309,7 @@
 }
 
 
-- (GSGifView *)fetchNextGifView {
+- (GSGifView *)fetchNextBackGifView {
     CGRect frame = [self backGifViewFrame];
     if ([GSGifManager sharedInstance].gifs.count == 0) {
         return nil;
@@ -364,7 +372,7 @@
     nullStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
     nullStateLabel.textAlignment = NSTextAlignmentCenter;
     nullStateLabel.text = @"Finding a batch of Gifs for you :)";
-
+    
     [self.view addSubview:nullStateLabel];
     [self.view sendSubviewToBack:nullStateImageView];
     [self.view sendSubviewToBack:nullStateLabel];
@@ -372,30 +380,30 @@
 
 - (void)setNullStateLoading {
     dispatch_async(dispatch_get_main_queue(), ^{
-    NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
-    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
-
-    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
-    nullStateImageView.animatedImage = gifImage;
+        NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
+        NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
         
-    nullStateLabel.text = @"Finding some more Gifs for you :)";
-    
-    nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
-    nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
-
+        FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+        nullStateImageView.animatedImage = gifImage;
+        
+        nullStateLabel.text = @"Finding some more Gifs for you :)";
+        
+        nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
+        nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
+        
     });
 }
 
 - (void)setNullStateNoConnection {
     dispatch_async(dispatch_get_main_queue(), ^{
-    nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 199, 142);
-    nullStateLabel.text = @"You're not connected to the internet :(";
-    NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
-    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
-    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
-    nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
-
-    nullStateImageView.animatedImage = gifImage;
+        nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 199, 142);
+        nullStateLabel.text = @"You're not connected to the internet :(";
+        NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
+        NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+        FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+        nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
+        
+        nullStateImageView.animatedImage = gifImage;
         
     });
 }

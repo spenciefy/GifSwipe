@@ -93,7 +93,7 @@
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
-    double padding = self.view.frame.size.width/12;
+    double padding = self.view.frame.size.width/14;
     return UIEdgeInsetsMake(padding, padding, padding, padding);
 }
 
@@ -105,7 +105,7 @@
 {
     if(isDeleteActive){
         selectedIndexPath = indexPath.row;
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Wait" message:@"Are you sure you want to delete this movie from your liked movies?" delegate:self cancelButtonTitle:@"Delete" otherButtonTitles:@"Cancel", nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Wait" message:@"Are you sure you want to delete this Gif from your liked Gifs?" delegate:self cancelButtonTitle:@"Delete" otherButtonTitles:@"Cancel", nil];
         [alert show];
     } else {
         gifObject = [likedGifs objectAtIndex: indexPath.row];

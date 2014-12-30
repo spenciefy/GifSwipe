@@ -26,6 +26,7 @@
     [encoder encodeObject:self.gifPreviewLink forKey:@"gifPreviewLink"];
     [encoder encodeObject:self.caption forKey:@"caption"];
     [encoder encodeObject:self.gifID forKey:@"gifID"];
+    [encoder encodeObject:UIImagePNGRepresentation(self.blurredBackroundImage) forKey:@"blurredBackgroundImage"];
 }
 
 - (id)initWithCoder:(NSCoder *)decoder {
@@ -37,6 +38,7 @@
     self.gifLink = [decoder decodeObjectForKey:@"gifLink"];
     self.gifPreviewLink = [decoder decodeObjectForKey:@"gifPreviewLink"];
     self.caption = [decoder decodeObjectForKey:@"caption"];
+    self.blurredBackroundImage = [UIImage imageWithData:[decoder decodeObjectForKey:@"blurredBackgroundImage"]];
     self.gifID = [decoder decodeObjectForKey:@"gifID"];
     
     return self;
