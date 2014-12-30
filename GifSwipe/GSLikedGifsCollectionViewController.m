@@ -10,6 +10,18 @@
 #import "GSGif.h"
 #import "GSGifView.h"
 
+#define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_RETINA ([[UIScreen mainScreen] scale] >= 2.0)
+#define SCREEN_WIDTH ([[UIScreen mainScreen] bounds].size.width)
+#define SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
+#define SCREEN_MAX_LENGTH (MAX(SCREEN_WIDTH, SCREEN_HEIGHT))
+#define SCREEN_MIN_LENGTH (MIN(SCREEN_WIDTH, SCREEN_HEIGHT)
+#define IS_IPHONE_4_OR_LESS (IS_IPHONE && SCREEN_MAX_LENGTH < 568.0)
+#define IS_IPHONE_5 (IS_IPHONE && SCREEN_MAX_LENGTH == 568.0)
+#define IS_IPHONE_6 (IS_IPHONE && SCREEN_MAX_LENGTH == 667.0)
+#define IS_IPHONE_6P (IS_IPHONE && SCREEN_MAX_LENGTH == 736.0)
+
 @interface GSLikedGifsCollectionViewController () {
     GSGif *gifObject;
     UIBarButtonItem *rightButton;
@@ -42,6 +54,15 @@
     self.navigationItem.rightBarButtonItem = rightButton;
     isDeleteActive = FALSE;
     [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
+    
+    UICollectionViewFlowLayout *flow = (UICollectionViewFlowLayout *)self.collectionView.collectionViewLayout;
+    if (IS_IPHONE_5) {
+        flow.minimumLineSpacing = 10;
+    } else if (IS_IPHONE_6){
+        flow.minimumLineSpacing = self.view.frame.size.width/14;
+    } else if (IS_IPHONE_6P) {
+        flow.minimumLineSpacing = self.view.frame.size.width/10;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -57,15 +78,18 @@
     
     static NSString *identifier = @"GifCell";
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
-    GSGifView *gifView = [likedGifs objectAtIndex: indexPath.row];
     
+    GSGif *gif = [likedGifs objectAtIndex: indexPath.row];
     UIImageView *backgroundImage = (UIImageView *)[cell viewWithTag: 1];
-    backgroundImage.image = gifView.backgroundImageView.image;
+    backgroundImage.image = gif.blurredBackroundImage;
+
+    FLAnimatedImage *gifImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:gif.gifLink]]];
     
-    FLAnimatedImageView *gifImageView = gifView.gifImageView;
-    gifImageView.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.width);
+    FLAnimatedImageView *gifImageView = [[FLAnimatedImageView alloc] initWithFrame: CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.width)];
     gifImageView.center = CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMidY(cell.bounds));
+    gifImageView.clipsToBounds = YES;
     gifImageView.contentMode = UIViewContentModeScaleAspectFit;
+    gifImageView.animatedImage = gifImage;
     [cell addSubview: gifImageView];
     
     cell.backgroundColor = [UIColor whiteColor];
@@ -93,8 +117,17 @@
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
-    double padding = self.view.frame.size.width/14;
+    double padding;
+    if (IS_IPHONE_5) {
+        padding = 10;
+    } else if (IS_IPHONE_6) {
+        padding = self.view.frame.size.width/14;
+    } else if (IS_IPHONE_6P) {
+        padding = self.view.frame.size.width/10;
+    }
+    NSLog(@"%f", self.view.frame.size.width);
     return UIEdgeInsetsMake(padding, padding, padding, padding);
+
 }
 
 -(void)backButtonPressed:(id)sender{
