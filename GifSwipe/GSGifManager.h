@@ -12,6 +12,13 @@
 
 + (GSGifManager *)sharedInstance;
 
-- (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit withCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock;
+- (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit new:(BOOL)new withCompletionBlock:(void (^)(NSArray *gifs, NSArray *gifIDs, NSError *error))completionBlock;
+- (void)loadGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock;
+
+@property (nonatomic, strong) NSMutableArray *addedGifIDs;
+@property (nonatomic, strong) NSMutableArray *gifs;
+@property (nonatomic, strong) NSMutableArray *displayedGifIDs;
+@property (nonatomic, assign) int newGifIndex;
+
 
 @end
