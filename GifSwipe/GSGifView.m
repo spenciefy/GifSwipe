@@ -9,6 +9,11 @@
 #import "GSGifView.h"
 #import "UIImage+animatedGIF.h"
 #import <BlurImageProcessor/ALDBlurImageProcessor.h>
+#import "UIView+MDCBorderedLabel.h"
+
+static CGFloat const MDCSwipeToChooseViewHorizontalPadding = 20.f;
+static CGFloat const MDCSwipeToChooseViewTopPadding = 35.f;
+static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
 
 @interface GSGifView ()
 
@@ -30,9 +35,11 @@
         [self setupView];
         [self constructImageView];
         dispatch_async(dispatch_get_main_queue(), ^{
-        [self constructMainView];
+            [self constructMainView];
+            [self constructLikedView];
+            [self constructNopeImageView];
+            [self setupSwipeToChoose];
         });
-        [self setupSwipeToChoose];
     }
     return self;
 }
@@ -55,18 +62,20 @@
     _backgroundImageView = [[UIImageView alloc] initWithFrame:imageFrame];
     _backgroundImageView.clipsToBounds = YES;
     _backgroundImageView.contentMode = UIViewContentModeScaleToFill;
-    UIImage *backgroundImage =[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.gif.gifPreviewLink]]];
-    _backgroundImageView.image = backgroundImage;
-    ALDBlurImageProcessor *avatarBlur = [[ALDBlurImageProcessor alloc] initWithImage:backgroundImage];
-    [avatarBlur asyncBlurWithRadius: 5
-                         iterations:5
-                       successBlock:^(UIImage *blurredImage) {
-                           _backgroundImageView.image = blurredImage;
-                       }
-                         errorBlock:^(NSNumber *errorCode)  {
-                             NSLog( @"Error code: %d", [errorCode intValue] );
-                         }];
-    [self addSubview:_backgroundImageView];
+    if(self.gif.gifPreviewLink != nil){
+        UIImage *backgroundImage =[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.gif.gifPreviewLink]]];
+        _backgroundImageView.image = backgroundImage;
+        ALDBlurImageProcessor *avatarBlur = [[ALDBlurImageProcessor alloc] initWithImage:backgroundImage];
+        [avatarBlur asyncBlurWithRadius: 5
+                             iterations:5
+                           successBlock:^(UIImage *blurredImage) {
+                               _backgroundImageView.image = blurredImage;
+                           }
+                             errorBlock:^(NSNumber *errorCode)  {
+                                 NSLog( @"Error code: %d", [errorCode intValue] );
+                             }];
+        [self addSubview:_backgroundImageView];
+    }
     
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.gif.gifLink]]];
     
@@ -103,26 +112,61 @@
     [_mainView addSubview:_captionLabel];
 }
 
+- (void)constructLikedView {
+
+    CGRect frame = CGRectMake(MDCSwipeToChooseViewHorizontalPadding,
+                              MDCSwipeToChooseViewTopPadding,
+                              CGRectGetMidX(self.backgroundImageView.bounds),
+                              MDCSwipeToChooseViewLabelWidth);
+    self.likedView = [[UIView alloc] initWithFrame:frame];
+    [self.likedView constructBorderedLabelWithText:self.options.likedText
+                                             color:self.options.likedColor
+                                             angle:self.options.likedRotationAngle];
+    self.likedView.alpha = 0.f;
+    [self addSubview:self.likedView];
+}
+
+- (void)constructNopeImageView {
+    CGFloat width = CGRectGetMidX(self.backgroundImageView.bounds);
+    CGFloat xOrigin = CGRectGetMaxX(self.backgroundImageView.bounds) - width - MDCSwipeToChooseViewHorizontalPadding;
+    self.nopeView = [[UIImageView alloc] initWithFrame:CGRectMake(xOrigin,
+                                                                  MDCSwipeToChooseViewTopPadding,
+                                                                  width,
+                                                                  MDCSwipeToChooseViewLabelWidth)];
+    [self.nopeView constructBorderedLabelWithText:self.options.nopeText
+                                            color:self.options.nopeColor
+                                            angle:self.options.nopeRotationAngle];
+    self.nopeView.alpha = 0.f;
+    [self addSubview:self.nopeView];
+}
+
 - (void)setupSwipeToChoose {
     MDCSwipeOptions *options = [MDCSwipeOptions new];
     options.delegate = self.options.delegate;
     options.threshold = self.options.threshold;
+    
+    __block UIView *likedImageView = self.likedView;
+    __block UIView *nopeImageView = self.nopeView;
     __weak GSGifView *weakself = self;
     options.onPan = ^(MDCPanState *state) {
         if (state.direction == MDCSwipeDirectionNone) {
-           
+            likedImageView.alpha = 0.f;
+            nopeImageView.alpha = 0.f;
         } else if (state.direction == MDCSwipeDirectionLeft) {
-     
+            likedImageView.alpha = 0.f;
+            nopeImageView.alpha = state.thresholdRatio;
         } else if (state.direction == MDCSwipeDirectionRight) {
-
+            likedImageView.alpha = state.thresholdRatio;
+            nopeImageView.alpha = 0.f;
         }
         
         if (weakself.options.onPan) {
             weakself.options.onPan(state);
         }
     };
-
+    
     [self mdc_swipeToChooseSetup:options];
 }
+
 
 @end

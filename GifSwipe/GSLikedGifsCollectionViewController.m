@@ -57,10 +57,16 @@
     backgroundImage.image = gifView.backgroundImageView.image;
     
     FLAnimatedImageView *gifImageView = gifView.gifImageView;
-    gifImageView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width);
-    gifImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20);
+    gifImageView.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.width);
+    gifImageView.center = CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMidY(cell.bounds));
     gifImageView.contentMode = UIViewContentModeScaleAspectFit;
-    [self.view addSubview: gifImageView];
+    [cell addSubview: gifImageView];
+    
+    cell.backgroundColor = [UIColor whiteColor];
+    cell.layer.cornerRadius = 5.f;
+    cell.layer.masksToBounds = YES;
+    cell.layer.borderWidth = 2.f;
+    cell.layer.borderColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1].CGColor;
     
     UILabel *delete = (UILabel *)[cell viewWithTag: 2];
     if (isDeleteActive) {
@@ -80,7 +86,7 @@
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
-    return UIEdgeInsetsMake(10, 10, 10, 10);
+    return UIEdgeInsetsMake(20, 20, 20, 20);
 }
 
 -(void)backButtonPressed:(id)sender{

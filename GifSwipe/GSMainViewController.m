@@ -60,7 +60,7 @@
         self.gifViews = [@[self.backGifView] mutableCopy];
             
         self.likedGifs = [[NSMutableArray alloc]init];
-        
+
         [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
         [self.navigationItem.leftBarButtonItem setEnabled:YES];
             
@@ -178,8 +178,13 @@
 }
 
 // This is called then a user swipes the view fully left or right.
-- (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {
-    NSLog(@"You swiped %@.", self.currentGifView.gif.caption);
+- (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {    
+    if (direction == MDCSwipeDirectionLeft) {
+        NSLog(@"You noped %@.", self.currentGifView.gif.caption);
+    } else {
+        [self.likedGifs addObject:self.currentGifView];
+        NSLog(@"You liked %@.", self.currentGifView.gif.caption);
+    }
     
     // MDCSwipeToChooseView removes the view from the view hierarchy
     // after it is swiped (this behavior can be customized via the
@@ -243,6 +248,11 @@
                                              CGRectGetWidth(frame),
                                              CGRectGetHeight(frame));
     };
+    options.likedText = @"like";
+    options.nopeText = @"nope";
+    options.likedColor = [UIColor colorWithRed:46/255.0 green:204/255.0 blue:113/255.0 alpha:1];
+    options.nopeColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
+    
     GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:self.gifs[0] options:options];
     [self.gifs removeObjectAtIndex:0];
     return gifView;
@@ -265,7 +275,10 @@
                                             CGRectGetWidth(frame),
                                             CGRectGetHeight(frame));
     };
-    
+    options.likedText = @"LIKE";
+    options.nopeText = @"NOPE";
+    options.likedColor = [UIColor colorWithRed:46/255.0 green:204/255.0 blue:113/255.0 alpha:1];
+    options.nopeColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
     GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:self.gifs[0] options:options];
     [self.gifs removeObjectAtIndex:0];
     return gifView;
@@ -368,8 +381,8 @@
 
 - (IBAction)shareAction:(id)sender {
     dispatch_async(dispatch_get_main_queue(), ^{
-    NSString *shareString = [NSString stringWithFormat:@"%@\rvia GifSwipe",self.currentGifView.gif.caption];
-    [self shareText:shareString andImage:[UIImage animatedImageWithAnimatedGIFURL:[NSURL URLWithString:self.currentGifView.gif.gifLink]] andUrl:[NSURL URLWithString:self.currentGifView.gif.gifLink]];
+        NSString *shareString = [NSString stringWithFormat:@"Check out this Gif I found via GifSwipe!\r\r%@\r",self.currentGifView.gif.caption];
+        [self shareText:shareString andImage:nil andUrl:[NSURL URLWithString:self.currentGifView.gif.gifLink]];
     });
 }
 
