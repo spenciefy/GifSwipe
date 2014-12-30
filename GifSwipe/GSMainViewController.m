@@ -40,14 +40,27 @@
     self.likedGifs = [[NSMutableArray alloc]init];
     self.addedGifViewIDs = [[NSMutableArray alloc]init];
     self.gifViews = [[NSMutableArray alloc]init];
+    
+    [GSGifManager sharedInstance].displayedGifIDs = [[NSMutableArray alloc]init];
 }
 
 - (void)setupMainView {
-    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"10" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
+#warning temporarily commented out so its easier to load stuff... overlap
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    NSData *data = [defaults objectForKey:@"displayedGifIDs"];
+//    if(data) {
+//    [GSGifManager sharedInstance].displayedGifIDs = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+//    NSLog(@"loaded displayedGifIDs: %@",  [GSGifManager sharedInstance].displayedGifIDs);
+//    }
+
+    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"20" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
             if(!error){
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                NSLog(@"Got first batch of gifs"); 
-                gifCount = 50;
+                NSLog(@"Got first batch of gifs: %@", [GSGifManager sharedInstance].gifs);
+                gifCount = 20;
+                if([GSGifManager sharedInstance].gifs.count < 5) {
+                    [self loadMoreGifViews];
+                }
                 self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
                 
                 self.backGifView = [self fetchNextGifView];
@@ -58,11 +71,7 @@
                     
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 self.likedGifs = [NSKeyedUnarchiver unarchiveObjectWithData:[defaults objectForKey:@"likedGifs"]];
-                if(![self.likedGifs count]){
-                    self.likedGifs = [[NSMutableArray alloc]init];
-                }
-
-                    
+                    if(!self.likedGifs) self.likedGifs = [[NSMutableArray alloc] init];
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.frontGifView.alpha = 0;
                 self.backGifView.alpha = 0;
@@ -142,7 +151,7 @@
                         if(gifView) {
                             [self.gifViews addObject:gifView];
                             NSLog(@"added gifview:%@", gifView.gif.caption);
-                            
+                     
                             if(self.gifViews.count > 1 && !self.currentGifView) {
                                 [self loadNewFrontBackViews];
                             }
@@ -203,6 +212,12 @@
     } else {
         [self.likedGifs addObject:self.currentGifView];
         NSLog(@"You liked %@.", self.currentGifView.gif.caption);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [self.likedGifs mutableCopy]];
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:data forKey:@"likedGifs"];
+            [defaults synchronize];
+        });
     }
     
     // MDCSwipeToChooseView removes the view from the view hierarchy
@@ -219,13 +234,18 @@
     
     if([self.gifViews count] > 0){
         [self.gifViews removeObjectAtIndex:0];
+        if(self.currentGifView) {
+            [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [GSGifManager sharedInstance].displayedGifIDs];
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:data forKey:@"displayedGifIDs"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+          //  NSLog(@"Saved displayedGifIDs in userdefaults: %@", [GSGifManager sharedInstance].displayedGifIDs);
+        }
         self.frontGifView = self.backGifView;
     }
     if([self.gifViews count] > 0){
-        if(self.currentGifView) {
-            [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
-        }
-        self.backGifView = self.gifViews[0];
+               self.backGifView = self.gifViews[0];
         self.backGifView.frame = [self backGifViewFrame];
         self.backGifView.alpha = 0.f;
         [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];

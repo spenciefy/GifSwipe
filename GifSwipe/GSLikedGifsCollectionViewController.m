@@ -124,6 +124,7 @@
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject: likedGifs];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:data forKey:@"likedGifs"];
+        [defaults synchronize];
     }
 }
 

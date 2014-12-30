@@ -20,4 +20,26 @@
     }
     return self;
 }
+
+-(void)encodeWithCoder:(NSCoder *)encoder{
+    [encoder encodeObject:self.gifLink forKey:@"gifLink"];
+    [encoder encodeObject:self.gifPreviewLink forKey:@"gifPreviewLink"];
+    [encoder encodeObject:self.caption forKey:@"caption"];
+    [encoder encodeObject:self.gifID forKey:@"gifID"];
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+    
+    self.gifLink = [decoder decodeObjectForKey:@"gifLink"];
+    self.gifPreviewLink = [decoder decodeObjectForKey:@"gifPreviewLink"];
+    self.caption = [decoder decodeObjectForKey:@"caption"];
+    self.gifID = [decoder decodeObjectForKey:@"gifID"];
+    
+    return self;
+}
+
 @end

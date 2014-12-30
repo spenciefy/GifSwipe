@@ -57,8 +57,8 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
     CGRect imageFrame = CGRectMake(0,
                                     0,
                                     CGRectGetWidth(self.bounds),
-                                    CGRectGetHeight(self.bounds) - bottomHeight);
-
+                                  CGRectGetHeight(self.bounds) - bottomHeight);
+ 
     _backgroundImageView = [[UIImageView alloc] initWithFrame:imageFrame];
     _backgroundImageView.clipsToBounds = YES;
     _backgroundImageView.contentMode = UIViewContentModeScaleToFill;
@@ -76,6 +76,7 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
                              }];
         [self addSubview:_backgroundImageView];
     }
+  
     
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.gif.gifLink]]];
     

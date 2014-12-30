@@ -27,6 +27,7 @@
 }
 
 - (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit new:(BOOL)new withCompletionBlock:(void (^)(NSArray *gifs, NSArray *gifIDs, NSError *error))completionBlock {
+    
     NSString *urlString;
     if(new) {
         //sketch, in this case from is the id of the previous gif id
@@ -68,7 +69,7 @@
 }
 
 - (void)loadGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
-    while (self.gifs.count < 100) {
+    while (self.gifs.count < 50) {
         NSString *stringNewGifIndex = [NSString stringWithFormat:@"%i", self.newGifIndex];
         GSGif *lastGif;
         if(self.gifs.count > 0){
@@ -80,9 +81,9 @@
         dispatch_once(&onceToken, ^{
             lastGif.gifID = @"";
         });
-        [self fetchGifsFrom:lastGif.gifID limit:@"100" new:YES withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
-        self.newGifIndex += 100;
-        if(self.gifs.count > 100) {
+        [self fetchGifsFrom:lastGif.gifID limit:@"50" new:YES withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
+        self.newGifIndex += 50;
+        if(self.gifs.count > 50) {
             completionBlock(gifs, nil);
         }
     }];
