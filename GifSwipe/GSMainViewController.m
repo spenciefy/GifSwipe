@@ -55,8 +55,15 @@
                 self.gifViews = [@[self.backGifView] mutableCopy];
                 self.likedGifs = [[NSMutableArray alloc]init];
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    self.frontGifView.alpha = 0;
+                    self.backGifView.alpha = 0;
                     [self.view addSubview:self.frontGifView];
                     [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                    
+                    [UIView animateWithDuration:0.3f animations:^{
+                        self.frontGifView.alpha = 1;
+                        self.backGifView.alpha = 1;
+                    }];
                     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
                     [self.navigationItem.leftBarButtonItem setEnabled:YES];
                 });
@@ -159,13 +166,18 @@
         
         self.frontGifView = self.gifViews[0];
         self.frontGifView.frame = [self frontGifViewFrame];
-        self.frontGifView.alpha = 1;
+        self.frontGifView.alpha = 0.f;
         [self.view addSubview:self.frontGifView];
     
         self.backGifView = self.gifViews[1];
         self.backGifView.frame = [self backGifViewFrame];
-        self.backGifView.alpha = 1.f;
+        self.backGifView.alpha = 0.f;
         [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+        
+        [UIView animateWithDuration:0.3f animations:^{
+            self.frontGifView.alpha = 1;
+            self.backGifView.alpha = 1;
+        }];
         
         [self.gifViews removeObjectAtIndex:0];
     });
