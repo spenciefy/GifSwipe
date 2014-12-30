@@ -31,51 +31,48 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [self setupNullState];
+
     currentlyAddingViews = NO;
+    
     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
     [self.navigationItem.leftBarButtonItem setEnabled:NO];
     
-    if(![self hasNetwork]) {
-        [self setNullStateNoConnection];
-    } else {
-        [self setNullStateLoading];
-        nullStateLabel.text = @"Loading a batch of gifs for you :)";
-    }
 }
 
 - (void)setupMainView {
+
     [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"50" withCompletionBlock:^(NSArray *gifs, NSError *error) {
         if(!error){
-        gifCount = 50;
-        self.gifs = [gifs mutableCopy];
-        
-        self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
-        [self.view addSubview:self.frontGifView];
-        
-        self.backGifView = [self fetchNextGifView];
-        [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
-        self.addedGifIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
-        self.gifViews = [@[self.backGifView] mutableCopy];
-            
-        self.likedGifs = [[NSMutableArray alloc]init];
-
-        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
-        [self.navigationItem.leftBarButtonItem setEnabled:YES];
-            
-        for(int i = 0; i < 5; i++) {
-            GSGifView *gifView = [self fetchNextGifView];
-            if(gifView && ![self.addedGifIDs containsObject:gifView.gif.gifID]) {
-                [self.addedGifIDs addObject:gifView.gif.gifID];
-                [self.gifViews addObject:gifView];
-                NSLog(@"added gifview:%@", gifView.gif.caption);
-            } else {
-                NSLog(@"error: %@", gifView.gif.caption);
-            }
-        }
-        
-        [self loadMoreGifViews];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                NSLog(@"isMainThread? %@", [NSThread isMainThread] ? @"YES" : @"NO");
+                gifCount = 50;
+                self.gifs = [gifs mutableCopy];
+                    
+                self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
+                    
+                self.backGifView = [self fetchNextGifView];
+                self.addedGifIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
+                self.gifViews = [@[self.backGifView] mutableCopy];
+                self.likedGifs = [[NSMutableArray alloc]init];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.view addSubview:self.frontGifView];
+                    [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+                    [self.navigationItem.leftBarButtonItem setEnabled:YES];
+                });
+                for(int i = 0; i < 5; i++) {
+                    GSGifView *gifView = [self fetchNextGifView];
+                    if(gifView && ![self.addedGifIDs containsObject:gifView.gif.gifID]) {
+                        [self.addedGifIDs addObject:gifView.gif.gifID];
+                        [self.gifViews addObject:gifView];
+                        NSLog(@"added gifview:%@", gifView.gif.caption);
+                    } else {
+                        NSLog(@"error: %@", gifView.gif.caption);
+                    }
+                }
+                
+                [self loadMoreGifViews];
+            });
         }
     }];
 }
@@ -91,12 +88,17 @@
 
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-   
+    [self setupNullState];
     if([self hasNetwork]) {
         [self setupMainView];
+    } else {
+        [self setNullStateNoConnection];
     }
+            
     [self becomeFirstResponder];
+    
 }
+
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self resignFirstResponder];
@@ -303,9 +305,15 @@
 }
 
 - (void)setupNullState{
-    nullStateImageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 199, 142)];
+    nullStateImageView = [[FLAnimatedImageView alloc] init];
+    nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
     nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
     nullStateImageView.contentMode = UIViewContentModeScaleAspectFit;
+    NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
+    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+    
+    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+    nullStateImageView.animatedImage = gifImage;
     [self.view addSubview:nullStateImageView];
     
     nullStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 30, 300, 500)];
@@ -315,11 +323,11 @@
     nullStateLabel.numberOfLines = 5;
     nullStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
     nullStateLabel.textAlignment = NSTextAlignmentCenter;
+    nullStateLabel.text = @"Finding a batch of Gifs for you :)";
 
     [self.view addSubview:nullStateLabel];
     [self.view sendSubviewToBack:nullStateImageView];
     [self.view sendSubviewToBack:nullStateLabel];
-
 }
 
 - (void)setNullStateLoading {
@@ -330,7 +338,7 @@
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
     nullStateImageView.animatedImage = gifImage;
         
-    nullStateLabel.text = @"Finding some more gifs for you :)";
+    nullStateLabel.text = @"Finding some more Gifs for you :)";
     
     nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
     nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
@@ -340,12 +348,15 @@
 
 - (void)setNullStateNoConnection {
     dispatch_async(dispatch_get_main_queue(), ^{
-
+    nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 199, 142);
     nullStateLabel.text = @"You're not connected to the internet :(";
     NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
     NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+    nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
+
     nullStateImageView.animatedImage = gifImage;
+        
     });
 }
 
