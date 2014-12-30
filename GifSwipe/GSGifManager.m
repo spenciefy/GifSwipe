@@ -18,14 +18,21 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedInstance = [[GSGifManager alloc] init];
-        
+        _sharedInstance.addedGifIDs = [[NSMutableArray alloc] init];
+        _sharedInstance.gifs = [[NSMutableArray alloc] init];
+        _sharedInstance.newGifIndex = 0;
     });
     return _sharedInstance;
 }
 
-- (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit withCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
+- (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit new:(BOOL)new withCompletionBlock:(void (^)(NSArray *gifs, NSArray *gifIDs, NSError *error))completionBlock {
+    NSString *urlString;
+    if(new) {
+        urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/new/.json?count=%@&limit=%@", from, limit];
+    } else {
+        urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/.json?count=%@&limit=%@", from, limit];
+    }
     
-    NSString *urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/.json?count=%@&limit=%@", from, limit];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
@@ -42,18 +49,31 @@
                                                            error:&error];
     
     NSArray *posts = [[json objectForKey:@"data"] objectForKey:@"children"];
-    NSMutableArray *gifs = [[NSMutableArray alloc] init];
+
     for(int i = 0; i < posts.count; i++) {
         GSGif *gif = [self gifForJSONPost:posts[i][@"data"]];
-        if(gif) {
-            [gifs addObject:gif];
+        if(gif && ![self.addedGifIDs containsObject:gif.gifID]) {
+            [self.gifs addObject:gif];
+            [self.addedGifIDs addObject:gif.gifID];
         }
         if(i == posts.count - 1) {
-            completionBlock(gifs, nil);
+            completionBlock(self.gifs,self.addedGifIDs, nil);
         }
     }
     } else {
-        completionBlock(nil, error);
+        completionBlock(nil,nil,error);
+    }
+}
+
+- (void)loadGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
+    while (self.gifs.count < 100) {
+        NSString *stringNewGifIndex = [NSString stringWithFormat:@"%i", self.newGifIndex];
+        [self fetchGifsFrom:stringNewGifIndex limit:@"100" new:YES withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
+        self.newGifIndex += 100;
+        if(self.gifs.count > 100) {
+            completionBlock(gifs, nil);
+        }
+    }];
     }
 }
 

@@ -16,7 +16,7 @@
 
 @property (nonatomic, strong) NSMutableArray *gifs;
 @property (nonatomic, strong) NSMutableArray *gifViews;
-@property (nonatomic, strong) NSMutableArray *addedGifIDs;
+@property (nonatomic, strong) NSMutableArray *addedGifViewIDs;
 @property (nonatomic, strong) NSMutableArray *likedGifs;
 
 @end
@@ -40,43 +40,40 @@
 
 - (void)setupMainView {
 
-    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"50" withCompletionBlock:^(NSArray *gifs, NSError *error) {
+    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"50" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
             if(!error){
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                    NSLog(@"isMainThread? %@", [NSThread isMainThread] ? @"YES" : @"NO");
+
                 gifCount = 50;
-                self.gifs = [gifs mutableCopy];
-                    
-                    self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
-                    
-                    self.backGifView = [self fetchNextGifView];
-                    self.addedGifIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
-                    self.gifViews = [@[self.backGifView] mutableCopy];
-                    self.likedGifs = [[NSMutableArray alloc]init];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    self.frontGifView.alpha = 0;
-                    self.backGifView.alpha = 0;
-                    [self.view addSubview:self.frontGifView];
-                    [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
-                    
-                    [UIView animateWithDuration:0.3f animations:^{
-                        self.frontGifView.alpha = 1;
-                        self.backGifView.alpha = 1;
-                    }];
-                    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
-                    [self.navigationItem.leftBarButtonItem setEnabled:YES];
-                });
+                self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
+                
+                self.backGifView = [self fetchNextGifView];
+                self.addedGifViewIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
+                self.gifViews = [@[self.backGifView] mutableCopy];
+                self.likedGifs = [[NSMutableArray alloc]init];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.frontGifView.alpha = 0;
+                self.backGifView.alpha = 0;
+                [self.view addSubview:self.frontGifView];
+                [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                
+                [UIView animateWithDuration:0.3f animations:^{
+                    self.frontGifView.alpha = 1;
+                    self.backGifView.alpha = 1;
+                }];
+                [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+                [self.navigationItem.leftBarButtonItem setEnabled:YES];
+            });
                 for(int i = 0; i < 5; i++) {
                     GSGifView *gifView = [self fetchNextGifView];
-                    if(gifView && ![self.addedGifIDs containsObject:gifView.gif.gifID]) {
-                        [self.addedGifIDs addObject:gifView.gif.gifID];
+                    if(gifView && ![self.addedGifViewIDs containsObject:gifView.gif.gifID]) {
+                        [self.addedGifViewIDs addObject:gifView.gif.gifID];
                         [self.gifViews addObject:gifView];
                         NSLog(@"added gifview:%@", gifView.gif.caption);
                     } else {
                         NSLog(@"error: %@", gifView.gif.caption);
                     }
                 }
-                
                 [self loadMoreGifViews];
             });
             }
@@ -122,14 +119,12 @@
 - (void)loadMoreGifViews {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         if(!currentlyAddingViews){
-        if(self.gifs.count >= 20) {
+        if([GSGifManager sharedInstance].gifs.count >= 20) {
             if(self.gifViews.count < 10) {
                 currentlyAddingViews = YES;
                 for(int i = 0; i < 15; i++) {
-                     GSGifView *gifView;
-                        gifView = [self fetchNextGifView];
-                        if(gifView && ![self.addedGifIDs containsObject:gifView.gif.gifID]) {
-                            [self.addedGifIDs addObject:gifView.gif.gifID];
+                     GSGifView *gifView = [self fetchNextGifView];
+                        if(gifView) {
                             [self.gifViews addObject:gifView];
                             NSLog(@"added gifview:%@", gifView.gif.caption);
                             
@@ -146,10 +141,7 @@
                 }
             }
         } else {
-            NSString *gifCountString = [NSString stringWithFormat:@"%i", gifCount];
-            [[GSGifManager sharedInstance] fetchGifsFrom:gifCountString limit:@"20" withCompletionBlock:^(NSArray *gifs, NSError *error) {
-                gifCount += 50;
-                self.gifs = [gifs mutableCopy];
+            [[GSGifManager sharedInstance] loadGifsWithCompletionBlock:^(NSArray *gifs, NSError *error) {
                 [self loadMoreGifViews];
             }];
         }
@@ -247,7 +239,7 @@
 }
 
 - (GSGifView *)popGifViewWithFrame:(CGRect)frame {
-    if (self.gifs.count == 0) {
+    if ([GSGifManager sharedInstance].gifs.count == 0) {
         return nil;
     }
 
@@ -266,15 +258,15 @@
     options.likedColor = [UIColor colorWithRed:46/255.0 green:204/255.0 blue:113/255.0 alpha:1];
     options.nopeColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
     
-    GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:self.gifs[0] options:options];
-    [self.gifs removeObjectAtIndex:0];
+    GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:[GSGifManager sharedInstance].gifs[0] options:options];
+    [[GSGifManager sharedInstance].gifs removeObjectAtIndex:0];
     return gifView;
 }
 
 
 - (GSGifView *)fetchNextGifView {
     CGRect frame = [self backGifViewFrame];
-    if (self.gifs.count == 0) {
+    if ([GSGifManager sharedInstance].gifs.count == 0) {
         return nil;
     }
     
@@ -292,8 +284,8 @@
     options.nopeText = @"NOPE";
     options.likedColor = [UIColor colorWithRed:46/255.0 green:204/255.0 blue:113/255.0 alpha:1];
     options.nopeColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
-    GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:self.gifs[0] options:options];
-    [self.gifs removeObjectAtIndex:0];
+    GSGifView *gifView = [[GSGifView alloc] initWithFrame:frame gif:[GSGifManager sharedInstance].gifs[0] options:options];
+    [[GSGifManager sharedInstance].gifs removeObjectAtIndex:0];
     return gifView;
 }
 
