@@ -53,7 +53,13 @@
                 self.backGifView = [self fetchNextGifView];
                 self.addedGifIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
                 self.gifViews = [@[self.backGifView] mutableCopy];
-                self.likedGifs = [[NSMutableArray alloc]init];
+                
+                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                self.likedGifs = [NSKeyedUnarchiver unarchiveObjectWithData:[defaults objectForKey:@"likedGifs"]];
+                if(![self.likedGifs count]){
+                    self.likedGifs = [[NSMutableArray alloc]init];
+                }
+
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.frontGifView.alpha = 0;
                     self.backGifView.alpha = 0;

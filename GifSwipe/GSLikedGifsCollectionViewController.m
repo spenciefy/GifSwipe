@@ -80,13 +80,15 @@
                 delete.alpha = 0.0;
             }];
     }
+    [cell addSubview: delete];
     
     return cell;
     
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
-    return UIEdgeInsetsMake(20, 20, 20, 20);
+    double padding = self.view.frame.size.width/12;
+    return UIEdgeInsetsMake(padding, padding, padding, padding);
 }
 
 -(void)backButtonPressed:(id)sender{
