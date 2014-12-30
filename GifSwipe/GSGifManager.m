@@ -45,6 +45,10 @@
     NSError *requestError;
     NSURLResponse *urlResponse = nil;
     NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&requestError];
+    if(requestError) {
+        NSLog(@"%@", requestError);
+        NSAssert(requestError, @"request error darn");
+    }
     NSError* error;
     if(response){
     NSDictionary* json = [NSJSONSerialization JSONObjectWithData:response
