@@ -36,7 +36,6 @@
     
     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
     [self.navigationItem.leftBarButtonItem setEnabled:NO];
-    
 }
 
 - (void)setupMainView {
@@ -91,6 +90,9 @@
 
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+
     [self setupNullState];
     if([self hasNetwork]) {
         [self setupMainView];
@@ -99,7 +101,7 @@
     }
             
     [self becomeFirstResponder];
-    
+    });
 }
 
 
@@ -208,6 +210,7 @@
         self.frontGifView = self.backGifView;
     }
     if([self.gifViews count] > 0){
+        [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
         self.backGifView = self.gifViews[0];
         self.backGifView.frame = [self backGifViewFrame];
         self.backGifView.alpha = 0.f;

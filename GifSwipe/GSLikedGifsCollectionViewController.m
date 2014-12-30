@@ -34,8 +34,14 @@
 {
     [super viewDidLoad];
     rightButton = [[UIBarButtonItem alloc]initWithTitle:@"Edit" style: UIBarButtonItemStylePlain target:self action:@selector(editLiked)];
+    [rightButton setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        [UIFont fontWithName:@"AvenirNext-Regular" size:20.0], NSFontAttributeName,[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1] , NSForegroundColorAttributeName,
+                                        nil] 
+                              forState:UIControlStateNormal];
+
     self.navigationItem.rightBarButtonItem = rightButton;
     isDeleteActive = FALSE;
+    [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

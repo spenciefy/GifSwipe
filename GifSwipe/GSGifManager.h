@@ -17,6 +17,7 @@
 
 @property (nonatomic, strong) NSMutableArray *addedGifIDs;
 @property (nonatomic, strong) NSMutableArray *gifs;
+@property (nonatomic, strong) NSMutableArray *displayedGifIDs;
 @property (nonatomic, assign) int newGifIndex;
 
 

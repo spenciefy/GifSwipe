@@ -20,6 +20,7 @@
         _sharedInstance = [[GSGifManager alloc] init];
         _sharedInstance.addedGifIDs = [[NSMutableArray alloc] init];
         _sharedInstance.gifs = [[NSMutableArray alloc] init];
+        _sharedInstance.displayedGifIDs = [[NSMutableArray alloc] init];
         _sharedInstance.newGifIndex = 0;
     });
     return _sharedInstance;
@@ -28,7 +29,8 @@
 - (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit new:(BOOL)new withCompletionBlock:(void (^)(NSArray *gifs, NSArray *gifIDs, NSError *error))completionBlock {
     NSString *urlString;
     if(new) {
-        urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/new/.json?count=%@&limit=%@", from, limit];
+        //sketch, in this case from is the id of the previous gif id
+        urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/new/.json?after=%@&limit=%@", from, limit];
     } else {
         urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/.json?count=%@&limit=%@", from, limit];
     }
@@ -52,7 +54,7 @@
 
     for(int i = 0; i < posts.count; i++) {
         GSGif *gif = [self gifForJSONPost:posts[i][@"data"]];
-        if(gif && ![self.addedGifIDs containsObject:gif.gifID]) {
+        if(gif && ![self.addedGifIDs containsObject:gif.gifID] && ![self.displayedGifIDs containsObject:gif.gifID]) {
             [self.gifs addObject:gif];
             [self.addedGifIDs addObject:gif.gifID];
         }
@@ -68,7 +70,8 @@
 - (void)loadGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
     while (self.gifs.count < 100) {
         NSString *stringNewGifIndex = [NSString stringWithFormat:@"%i", self.newGifIndex];
-        [self fetchGifsFrom:stringNewGifIndex limit:@"100" new:YES withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
+        GSGif *lastGif = [self.gifs lastObject];
+        [self fetchGifsFrom:lastGif.gifID limit:@"100" new:YES withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
         self.newGifIndex += 100;
         if(self.gifs.count > 100) {
             completionBlock(gifs, nil);
