@@ -9,6 +9,7 @@
 #import "GSLikedGifsCollectionViewController.h"
 #import "GSGif.h"
 #import "GSGifView.h"
+#import "GSPopOutView.h"
 
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
@@ -149,9 +150,10 @@
         [alert show];
     } else {
         gifObject = [likedGifs objectAtIndex: indexPath.row];
-        [self performSegueWithIdentifier:@"pushDetailFromLiked" sender:self];
+        GSPopOutView *gifView = [[GSPopOutView alloc] initWithFrame: CGRectMake(0, 0, self.view.frame.size.width/1.5, self.view.frame.size.height/1.5)];
+        [gifView setGifName: @"loading"];
+        [gifView setGifText: gifObject.caption];
     }
-    
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -166,10 +168,6 @@
         [defaults setObject:data forKey:@"likedGifs"];
         [defaults synchronize];
     }
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-
 }
 
 - (void)editLiked {

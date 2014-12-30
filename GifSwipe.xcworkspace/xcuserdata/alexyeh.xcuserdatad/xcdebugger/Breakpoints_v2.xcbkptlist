@@ -9,13 +9,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "GifSwipe/GSMainViewController.m"
-            timestampString = "441658509.099779"
+            filePath = "GifSwipe/GSGifView.m"
+            timestampString = "441664154.182852"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
-            landmarkName = "-setupMainView"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "-constructImageView"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,13 +25,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "GifSwipe/GSMainViewController.m"
-            timestampString = "441658931.817274"
+            filePath = "GifSwipe/GSGifView.m"
+            timestampString = "441664154.969659"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "81"
-            endingLineNumber = "81"
-            landmarkName = "-setupMainView"
+            startingLineNumber = "88"
+            endingLineNumber = "88"
+            landmarkName = "-constructImageView"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
