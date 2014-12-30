@@ -11,12 +11,14 @@
 #import <MDCSwipeToChoose/MDCSwipeToChoose.h>
 #import "Reachability.h"
 #import "UIImage+animatedGIF.h"
+#import "GSLikedGifsCollectionViewController.h"
 
 @interface GSMainViewController ()
 
 @property (nonatomic, strong) NSMutableArray *gifs;
 @property (nonatomic, strong) NSMutableArray *gifViews;
 @property (nonatomic, strong) NSMutableArray *addedGifIDs;
+@property (nonatomic, strong) NSMutableArray *likedGifs;
 
 @end
 
@@ -56,6 +58,8 @@
         [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
         self.addedGifIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
         self.gifViews = [@[self.backGifView] mutableCopy];
+            
+        self.likedGifs = [[NSMutableArray alloc]init];
         
         [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
         [self.navigationItem.leftBarButtonItem setEnabled:YES];
@@ -367,5 +371,14 @@
     NSString *shareString = [NSString stringWithFormat:@"%@\rvia GifSwipe",self.currentGifView.gif.caption];
     [self shareText:shareString andImage:[UIImage animatedImageWithAnimatedGIFURL:[NSURL URLWithString:self.currentGifView.gif.gifLink]] andUrl:[NSURL URLWithString:self.currentGifView.gif.gifLink]];
     });
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    NSLog(@"segue from main view");
+    if([[segue identifier] isEqualToString:@"likedSegue"]){
+        GSLikedGifsCollectionViewController *likedCollectionVC = [segue destinationViewController];
+        likedCollectionVC.likedGifs = self.likedGifs;
+    }
 }
 @end
