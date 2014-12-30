@@ -70,7 +70,16 @@
 - (void)loadGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
     while (self.gifs.count < 100) {
         NSString *stringNewGifIndex = [NSString stringWithFormat:@"%i", self.newGifIndex];
-        GSGif *lastGif = [self.gifs lastObject];
+        GSGif *lastGif;
+        if(self.gifs.count > 0){
+            lastGif = [self.gifs lastObject];
+        } else {
+            lastGif.gifID = @"";
+        }
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            lastGif.gifID = @"";
+        });
         [self fetchGifsFrom:lastGif.gifID limit:@"100" new:YES withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
         self.newGifIndex += 100;
         if(self.gifs.count > 100) {

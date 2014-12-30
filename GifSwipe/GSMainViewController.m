@@ -36,20 +36,26 @@
     
     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
     [self.navigationItem.leftBarButtonItem setEnabled:NO];
+    
+    self.likedGifs = [[NSMutableArray alloc]init];
+    self.addedGifViewIDs = [[NSMutableArray alloc]init];
+    self.gifViews = [[NSMutableArray alloc]init];
 }
 
 - (void)setupMainView {
-    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"50" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
+    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"10" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
             if(!error){
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-
+                NSLog(@"Got first batch of gifs"); 
                 gifCount = 50;
                 self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
                 
                 self.backGifView = [self fetchNextGifView];
-                self.addedGifViewIDs = [@[self.frontGifView.gif.gifID, self.backGifView.gif.gifID] mutableCopy];
-                self.gifViews = [@[self.backGifView] mutableCopy];
-                self.likedGifs = [[NSMutableArray alloc]init];
+                [self.addedGifViewIDs addObject:self.frontGifView.gif.gifID];
+                [self.addedGifViewIDs addObject:self.backGifView.gif.gifID];
+
+                [self.gifViews addObject:self.backGifView];
+                    
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.frontGifView.alpha = 0;
                 self.backGifView.alpha = 0;
@@ -119,13 +125,13 @@
 }
 
 - (void)loadMoreGifViews {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        if(!currentlyAddingViews){
-        if([GSGifManager sharedInstance].gifs.count >= 20) {
-            if(self.gifViews.count < 10) {
-                currentlyAddingViews = YES;
-                for(int i = 0; i < 15; i++) {
-                     GSGifView *gifView = [self fetchNextGifView];
+    if(!currentlyAddingViews){
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            if([GSGifManager sharedInstance].gifs.count >= 30) {
+                if(self.gifViews.count < 10) {
+                    currentlyAddingViews = YES;
+                    for(int i = 0; i < 25; i++) {
+                        GSGifView *gifView = [self fetchNextGifView];
                         if(gifView) {
                             [self.gifViews addObject:gifView];
                             NSLog(@"added gifview:%@", gifView.gif.caption);
@@ -140,16 +146,15 @@
                             currentlyAddingViews = NO;
                             [self loadMoreGifViews];
                         }
+                    }
                 }
+            } else {
+                [[GSGifManager sharedInstance] loadGifsWithCompletionBlock:^(NSArray *gifs, NSError *error) {
+                    [self loadMoreGifViews];
+                }];
             }
-        } else {
-            [[GSGifManager sharedInstance] loadGifsWithCompletionBlock:^(NSArray *gifs, NSError *error) {
-                [self loadMoreGifViews];
-            }];
-        }
-        }
-    });
-    
+        });
+    }
 }
 
 - (void)loadNewFrontBackViews {
@@ -210,7 +215,9 @@
         self.frontGifView = self.backGifView;
     }
     if([self.gifViews count] > 0){
-        [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
+        if(self.currentGifView) {
+            [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
+        }
         self.backGifView = self.gifViews[0];
         self.backGifView.frame = [self backGifViewFrame];
         self.backGifView.alpha = 0.f;
