@@ -77,7 +77,13 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
                              }];
         [self addSubview:_backgroundImageView];
     }
-    FLAnimatedImage *gifImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.gif.gifLink]]];
+    NSLog(@"now starting stupid long gif loading method");
+//    FLAnimatedImage *gifImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.gif.gifLink]]];
+    NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
+    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+#warning temp code to speed up loading
+
+    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
     _gifImageView = [[FLAnimatedImageView alloc] initWithFrame:imageFrame];
     _gifImageView.clipsToBounds = YES;
     _gifImageView.contentMode = UIViewContentModeScaleAspectFit;
