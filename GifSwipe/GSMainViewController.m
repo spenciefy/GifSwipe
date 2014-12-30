@@ -11,6 +11,7 @@
 #import <MDCSwipeToChoose/MDCSwipeToChoose.h>
 #import "Reachability.h"
 #import "UIImage+animatedGIF.h"
+#import "GSLikedGifsCollectionViewController.h"
 
 @interface GSMainViewController ()
 
@@ -39,7 +40,6 @@
 }
 
 - (void)setupMainView {
-
     [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"50" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
             if(!error){
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
@@ -76,8 +76,8 @@
                 }
                 [self loadMoreGifViews];
             });
-            }
-        }];
+        }
+    }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -187,7 +187,7 @@
     if (direction == MDCSwipeDirectionLeft) {
         NSLog(@"You noped %@.", self.currentGifView.gif.caption);
     } else {
-        [self.likedGifs addObject:self.currentGifView.gif];
+        [self.likedGifs addObject:self.currentGifView];
         NSLog(@"You liked %@.", self.currentGifView.gif.caption);
     }
     
@@ -400,8 +400,12 @@
     });
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    NSLog(@"segue from main view");
+    if([[segue identifier] isEqualToString:@"likedSegue"]){
+        GSLikedGifsCollectionViewController *likedCollectionVC = [segue destinationViewController];
+        likedCollectionVC.likedGifs = self.likedGifs;
+    }
 }
-
 @end

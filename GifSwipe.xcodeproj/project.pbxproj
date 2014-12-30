@@ -28,6 +28,7 @@
 		6C886B8A1A52090B00088119 /* MDCGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B891A52090B00088119 /* MDCGeometry.m */; };
 		B258CB4D1A5167A6007BA230 /* GSLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB4B1A5167A6007BA230 /* GSLoadingView.m */; };
 		B258CB4E1A5167A6007BA230 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = B258CB4C1A5167A6007BA230 /* loading.gif */; };
+		B258CB511A51FD79007BA230 /* GSLikedGifsCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,8 @@
 		B258CB4A1A5167A6007BA230 /* GSLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSLoadingView.h; sourceTree = "<group>"; };
 		B258CB4B1A5167A6007BA230 /* GSLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSLoadingView.m; sourceTree = "<group>"; };
 		B258CB4C1A5167A6007BA230 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
+		B258CB4F1A51FD79007BA230 /* GSLikedGifsCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSLikedGifsCollectionViewController.h; sourceTree = "<group>"; };
+		B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSLikedGifsCollectionViewController.m; sourceTree = "<group>"; };
 		C453BAB61BCCA5FF0610F49D /* Pods-GifSwipe.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GifSwipe.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe.debug.xcconfig"; sourceTree = "<group>"; };
 		EB9F2931C7D1AABD7D1004B0 /* libPods-GifSwipe.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GifSwipe.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1C56484DF9AA73908B335E7 /* Pods-GifSwipe.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GifSwipe.release.xcconfig"; path = "Pods/Target Support Files/Pods-GifSwipe/Pods-GifSwipe.release.xcconfig"; sourceTree = "<group>"; };
@@ -189,10 +192,10 @@
 		6C886B701A510AB000088119 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				B258CB4A1A5167A6007BA230 /* GSLoadingView.h */,
-				B258CB4B1A5167A6007BA230 /* GSLoadingView.m */,
 				6C886B631A510A4100088119 /* GSGifView.h */,
 				6C886B641A510A4100088119 /* GSGifView.m */,
+				B258CB4A1A5167A6007BA230 /* GSLoadingView.h */,
+				B258CB4B1A5167A6007BA230 /* GSLoadingView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -202,8 +205,8 @@
 			children = (
 				6C886B651A510A4100088119 /* GSMainViewController.h */,
 				6C886B661A510A4100088119 /* GSMainViewController.m */,
-				6C886B821A51F79400088119 /* GSLikedGifsViewController.h */,
-				6C886B831A51F79400088119 /* GSLikedGifsViewController.m */,
+				B258CB4F1A51FD79007BA230 /* GSLikedGifsCollectionViewController.h */,
+				B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -386,11 +389,11 @@
 				6C886B6A1A510A4100088119 /* GSGifManager.m in Sources */,
 				B258CB4D1A5167A6007BA230 /* GSLoadingView.m in Sources */,
 				6C886B691A510A4100088119 /* GSGif.m in Sources */,
+				B258CB511A51FD79007BA230 /* GSLikedGifsCollectionViewController.m in Sources */,
 				6C886B3F1A510A1800088119 /* AppDelegate.m in Sources */,
 				6C886B8A1A52090B00088119 /* MDCGeometry.m in Sources */,
 				6C886B3C1A510A1800088119 /* main.m in Sources */,
 				6C886B6D1A510A4100088119 /* UIImage+animatedGIF.m in Sources */,
-				6C886B841A51F79400088119 /* GSLikedGifsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
