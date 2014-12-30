@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2AB00ECC0B01923B0ADEBC5B"
+               BlueprintIdentifier = "F9AB9933562083B629CEAFB5"
                BuildableName = "libPods-GifSwipe-BlurImageProcessor.a"
                BlueprintName = "Pods-GifSwipe-BlurImageProcessor"
                ReferencedContainer = "container:Pods.xcodeproj">

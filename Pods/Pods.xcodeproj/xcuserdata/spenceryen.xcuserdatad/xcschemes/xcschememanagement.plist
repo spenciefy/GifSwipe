@@ -29,11 +29,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-GifSwipe-Reveal-iOS-SDK.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-GifSwipe.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -42,37 +37,32 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2AB00ECC0B01923B0ADEBC5B</key>
+		<key>244D333885BD1E9B6634DD08</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>389E00F8E564ED9778672D1D</key>
+		<key>3A3807959161DF5CF7995F45</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6FE6BAE7F74A2F86BAC92B13</key>
+		<key>691DEBB524B3C83A64166FC0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>71A032E12E960962DFB9854B</key>
+		<key>6F322D5643CF03D40342B38B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>82A8C4EC802922F55E6B180E</key>
+		<key>E16F4FEBD6091CAED50BA689</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8970695C360C3A906BCEAF3D</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>A54BA05F36812699FE49C818</key>
+		<key>F9AB9933562083B629CEAFB5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
