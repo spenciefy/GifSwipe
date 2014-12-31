@@ -83,15 +83,10 @@
     GSGif *gif = [likedGifs objectAtIndex: indexPath.row];
     UIImageView *backgroundImage = (UIImageView *)[cell viewWithTag: 1];
     backgroundImage.image = gif.blurredBackroundImage;
+    
+    NSData *gifData = [NSData dataWithContentsOfFile:gif.gifFileLocation];
+    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
 
-  //  FLAnimatedImage *gifImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:gif.gifLink]]];
-    
-#warning temp code to speed up loading
-    NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
-    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
-    
-    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
-    
     FLAnimatedImageView *gifImageView = [[FLAnimatedImageView alloc] initWithFrame: CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.width)];
     
     gifImageView.center = CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMidY(cell.bounds));

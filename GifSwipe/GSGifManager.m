@@ -9,6 +9,8 @@
 #import "GSGifManager.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import "GSGif.h"
+#import <AFNetworking/AFHTTPRequestOperation.h>
+
 //https://graph.facebook.com/v2.2/201636233240648/feed?access_token=679031018880162|p-4FAOxNNYD-AsdY7KNuTWLS88o
 #define ACCESS_TOKEN @"679031018880162|p-4FAOxNNYD-AsdY7KNuTWLS88o"
 @implementation GSGifManager
@@ -22,75 +24,118 @@
         _sharedInstance.gifs = [[NSMutableArray alloc] init];
         _sharedInstance.displayedGifIDs = [[NSMutableArray alloc] init];
         _sharedInstance.newGifIndex = 0;
+        _sharedInstance.loadGifs = NO;
+        _sharedInstance.lastGifID = @"";
     });
     return _sharedInstance;
 }
 
 - (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit new:(BOOL)new withCompletionBlock:(void (^)(NSArray *gifs, NSArray *gifIDs, NSError *error))completionBlock {
-    
-    NSString *urlString;
-    if(new) {
-        //sketch, in this case from is the id of the previous gif id
-        urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/new/.json?after=%@&limit=%@", from, limit];
-    } else {
-        urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/.json?count=%@&limit=%@", from, limit];
-    }
-    
-    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-                                                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                                       timeoutInterval:5];
-    
-    [request setHTTPMethod: @"GET"];
-    NSError *requestError;
-    NSURLResponse *urlResponse = nil;
-    NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&requestError];
-    if(requestError) {
-        NSLog(@"%@", requestError);
-        NSAssert(requestError, @"request error darn");
-    }
-    NSError* error;
-    if(response){
-    NSDictionary* json = [NSJSONSerialization JSONObjectWithData:response
-                                                         options:kNilOptions
-                                                           error:&error];
-    
-    NSArray *posts = [[json objectForKey:@"data"] objectForKey:@"children"];
-
-    for(int i = 0; i < posts.count; i++) {
-        GSGif *gif = [self gifForJSONPost:posts[i][@"data"]];
-        if(gif && ![self.addedGifIDs containsObject:gif.gifID] && ![self.displayedGifIDs containsObject:gif.gifID]) {
-            [self.gifs addObject:gif];
-            [self.addedGifIDs addObject:gif.gifID];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        
+        NSString *urlString;
+        if(new) {
+            //sketch, in this case from is the id of the previous gif id
+            urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/new/.json?after=%@&limit=%@", from, limit];
+        } else {
+            urlString = [NSString stringWithFormat:@"http://www.reddit.com/r/gifs/.json?count=%@&limit=%@", from, limit];
         }
-        if(i == posts.count - 1) {
-            completionBlock(self.gifs,self.addedGifIDs, nil);
+        
+        NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                                           timeoutInterval:5];
+        
+        [request setHTTPMethod: @"GET"];
+        NSError *requestError;
+#warning need to fix this weird completion block bug
+        NSURLResponse *urlResponse = nil;
+        NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&requestError];
+        if(requestError) {
+            NSLog(@"request error in reddit stuff %@", requestError);
+            completionBlock(nil,nil,requestError);
+        } else if(response){
+            NSError* error;
+            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:response
+                                                                 options:kNilOptions
+                                                                   error:&error];
+            
+            NSArray *posts = [[json objectForKey:@"data"] objectForKey:@"children"];
+            //this is to keep track of gifs including those that aren't valid
+            NSMutableArray *gifsIncludingNonGifs = [[NSMutableArray alloc] init];
+            for(int i = 0; i < posts.count; i++) {
+                GSGif *gif = [self gifForJSONPost:posts[i][@"data"]];
+                if(gif.gifLink) {
+                    NSURL *gifURL = [NSURL URLWithString:gif.gifLink];
+                    NSURLRequest *gifURLRequest = [NSURLRequest requestWithURL:gifURL];
+                    NSString *gifFileName = [gifURL lastPathComponent];
+                    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                    NSString *documentsDirectory = [paths objectAtIndex:0];
+                    NSString *gifFileLocation = [documentsDirectory stringByAppendingPathComponent:gifFileName];
+                    gif.gifFileLocation = gifFileLocation;
+                    AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:gifURLRequest];
+                    [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id data) {
+                        NSData *gifData = [[NSData alloc] initWithData:data];
+                        [gifData writeToFile:gifFileLocation atomically:YES];
+                        if(gif && ![self.addedGifIDs containsObject:gif.gifID] && ![self.displayedGifIDs containsObject:gif.gifID]) {
+                            [self.gifs addObject:gif];
+                            [gifsIncludingNonGifs addObject:gif];
+                            [self.addedGifIDs addObject:gif.gifID];
+                            NSLog(@"added gif %@ data with: %@",gif.caption, gifFileLocation);
+                        }
+                        if(new) {
+                            if(i == posts.count-1) {
+                                self.lastGifID = gif.gifID;
+                                completionBlock(self.gifs,self.addedGifIDs, nil);
+                            }
+                        } else if (gifsIncludingNonGifs.count == posts.count) {
+                            completionBlock(self.gifs,self.addedGifIDs, nil);
+                        }
+                        
+                    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                        NSLog(@"error in urlsession: %@ with location%@, giflink: %@", error.description, gif.gifFileLocation, gif.gifLink);
+                        completionBlock(nil,nil,error);
+                    }];
+                    [requestOperation start];
+                } else {
+                    [gifsIncludingNonGifs addObject:gif];
+                    if(i == posts.count-1) {
+                        if(new){
+                            self.lastGifID = gif.gifID;
+                            NSError *error = [[NSError alloc]initWithDomain:@"Gif doesn't have .gif" code:999 userInfo:nil];
+                            completionBlock(nil,nil,error);
+                        }
+                    }
+                }
+            }
         }
-    }
-    } else {
-        completionBlock(nil,nil,error);
-    }
+    });
 }
 
-- (void)loadGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock {
-    while (self.gifs.count < 50) {
-        NSString *stringNewGifIndex = [NSString stringWithFormat:@"%i", self.newGifIndex];
-        GSGif *lastGif;
-        if(self.gifs.count > 0){
-            lastGif = [self.gifs lastObject];
-        } else {
-            lastGif.gifID = @"";
+
+- (void)startLoadingGifsInBackground{
+    if(self.gifs.count < 10) {
+        if (self.loadGifs) {
+            if(self.lastGifID) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+                    [self fetchGifsFrom:self.lastGifID limit:@"3" new:YES withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
+                        if(!error) {
+                            NSLog(@"loaded 1 gif, now gifs count %lu", (unsigned long)self.gifs.count);
+                        } else {
+                            NSLog(@"error in fetching 1: %@", error.description);
+                        }
+                        [self startLoadingGifsInBackground];
+                        
+                    }];
+                });
+            } else {
+                NSAssert(self.lastGifID == nil,@"no last gif");
+                NSLog(@"no last gif...");
+            }
         }
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            lastGif.gifID = @"";
-        });
-        [self fetchGifsFrom:lastGif.gifID limit:@"50" new:YES withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
-        self.newGifIndex += 50;
-        if(self.gifs.count > 50) {
-            completionBlock(gifs, nil);
-        }
-    }];
+    } else {
+        NSLog(@"gifs count: %lu, enough so stop loading", (unsigned long)self.gifs.count);
+        self.loadGifs = NO;
     }
 }
 
@@ -110,7 +155,8 @@
         GSGif *gif = [[GSGif alloc] initWithLink:urlWithoutV previewLink:previewLink caption:caption gifID:jsonPost[@"name"]];
         return gif;
     } else {
-        return nil;
+        GSGif *gif = [[GSGif alloc] initWithLink:nil previewLink:nil caption:@"Gif returned only for id" gifID:jsonPost[@"name"]];
+        return gif;
     }
 }
 

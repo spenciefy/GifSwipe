@@ -7,18 +7,22 @@
 //
 
 #import <Foundation/Foundation.h>
-
 @interface GSGifManager : NSObject
 
 + (GSGifManager *)sharedInstance;
 
 - (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit new:(BOOL)new withCompletionBlock:(void (^)(NSArray *gifs, NSArray *gifIDs, NSError *error))completionBlock;
-- (void)loadGifsWithCompletionBlock:(void (^)(NSArray *gifs, NSError *error))completionBlock;
 
+- (void)startLoadingGifsInBackground;
+- (void)stopLoadingGifs;
+
+    
 @property (nonatomic, strong) NSMutableArray *addedGifIDs;
 @property (nonatomic, strong) NSMutableArray *gifs;
 @property (nonatomic, strong) NSMutableArray *displayedGifIDs;
+@property (nonatomic, strong) NSString *lastGifID;
 @property (nonatomic, assign) int newGifIndex;
+@property (nonatomic, assign) BOOL loadGifs;
 
 
 @end
