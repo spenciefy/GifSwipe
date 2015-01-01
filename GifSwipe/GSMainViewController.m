@@ -63,7 +63,6 @@
             
                 if([GSGifManager sharedInstance].gifs.count < 4) {
                     NSLog(@"Loading more gif views because not enough gifs found");
-                    currentlyAddingGifs = YES;
                     [self loadMoreGifs];
                 }
 
@@ -72,7 +71,6 @@
                 self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
                 
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        NSLog(@"Updating UI now");
                         //Update UI on main thread
                         self.frontGifView.alpha = 0;
                         self.backGifView.alpha = 0;
@@ -94,7 +92,7 @@
         } else {
             //Error in fetching
             dispatch_async(dispatch_get_main_queue(), ^{
-            [self setNullStateNoConnection];
+                [self setNullStateNoConnection];
             });
         }
     }];
@@ -180,7 +178,6 @@
     NSString *toGifFinalPath = [toGifFolderPath stringByAppendingPathComponent:gifFileName];
     
     if (direction == MDCSwipeDirectionRight) {
-        [self.likedGifs addObject:self.currentGifView.gif];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             NSError *error;
             BOOL isDirectory;
@@ -190,11 +187,12 @@
             }
             
             if(![manager fileExistsAtPath:toGifFinalPath] && [manager fileExistsAtPath:fromGifFinalPath]) {
+                [self.likedGifs addObject:self.currentGifView.gif];
                 [manager moveItemAtPath:fromGifFinalPath toPath:toGifFinalPath error:&error];
                 if(error) {
-                    NSLog(@"Error in moving liked gif %@", error.description);
+                   // NSLog(@"Error in moving liked gif %@", error.description);
                 } else {
-                    NSLog(@"Moved liked gif %@ to %@", gifFileName, toGifFinalPath);
+                   // NSLog(@"Moved liked gif %@ to %@", gifFileName, toGifFinalPath);
                 }
             }
 
@@ -209,9 +207,9 @@
         NSError *error;
         BOOL success = [manager removeItemAtPath:gifFileLocation error:&error];
         if (success) {
-            NSLog(@"removed noped gif, %@", self.currentGifView.gif.caption);
+          //  NSLog(@"removed noped gif, %@", self.currentGifView.gif.caption);
         } else {
-            NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
+          //   NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
         }
     }
     
@@ -429,7 +427,6 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    NSLog(@"segue from main view");
     if([[segue identifier] isEqualToString:@"likedSegue"]){
         GSLikedGifsCollectionViewController *likedCollectionVC = [segue destinationViewController];
         likedCollectionVC.likedGifs = self.likedGifs;

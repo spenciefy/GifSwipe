@@ -29,6 +29,8 @@
     int selectedIndexPath;
     
     NSMutableArray *flGifImages;
+    UIVisualEffectView *blurView;
+    GSPopOutView *gifView;
 }
 @end
 
@@ -80,7 +82,11 @@
         NSData *gifData = [NSData dataWithContentsOfFile:gifFileLocation];
         
         FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
-        [flGifImages addObject:gifImage];
+        if(gifImage) {
+            [flGifImages addObject:gifImage];
+        } else {
+            [likedGifs removeObject:gif];
+        }
         if(flGifImages.count == likedGifs.count) {
             [self.collectionView reloadData];
         }
@@ -98,7 +104,6 @@
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     
     GSGif *gif = [likedGifs objectAtIndex: indexPath.row];
-    NSLog(@"gif: %@ at index: %li", gif.caption, (long)indexPath.row);
     UIImageView *backgroundImage = (UIImageView *)[cell viewWithTag: 1];
     backgroundImage.image = gif.blurredBackroundImage;
     
@@ -144,7 +149,6 @@
     } else if (IS_IPHONE_6P) {
         padding = self.view.frame.size.width/10;
     }
-    NSLog(@"%f", self.view.frame.size.width);
     return UIEdgeInsetsMake(padding, padding, padding, padding);
 
 }
@@ -161,43 +165,130 @@
         [alert show];
     } else {
         GSGif *gif = likedGifs[indexPath.row];
-        GSPopOutView *gifView = [[GSPopOutView alloc] initWithFrame: CGRectMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame), self.view.frame.size.width/1.15, self.view.frame.size.height/1.15 - self.navigationController.navigationBar.frame.size.height) gif:likedGifs[indexPath.row]];
-        gifView.center = CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame) + self.navigationController.navigationBar.frame.size.height);
+        gifView = [[GSPopOutView alloc] initWithFrame: CGRectMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame), self.view.frame.size.width/1.15, self.view.frame.size.height/1.15 - self.navigationController.navigationBar.frame.size.height) gif:gif];
+        gifView.center = CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame) + 20);
         gifView.alpha = 0;
-        __weak GSPopOutView *wGifView = gifView;
-        gifView.closeActionBlock = ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [UIView animateWithDuration:0.3f animations:^{
-                    wGifView.alpha = 0;
-                } completion:^(BOOL finished) {
-                    [wGifView removeFromSuperview];
-                }];
-            });
-        };
-        gifView.shareActionBlock = ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *shareString = [NSString stringWithFormat:@"Check out this Gif I found via GifSwipe!\r\r%@\r",gif.caption];
-                [self shareText:shareString andImage:nil andUrl:[NSURL URLWithString:gif.gifLink]];
-            });
-        };
-        [self.view addSubview:gifView];
+ 
+        UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle: UIBlurEffectStyleLight];
+        blurView = [[UIVisualEffectView alloc] initWithEffect: blurEffect];
+        [blurView setFrame:[[[UIApplication sharedApplication] delegate] window].frame];
+        [blurView addSubview:gifView];
+        
+        UIToolbar *gifViewToolbar = [[UIToolbar alloc] init];
+        gifViewToolbar.frame = CGRectMake(gifView.frame.origin.x + 10, gifView.frame.origin.y - 54, (self.view.frame.size.width/1.15) - 20 , 44);
+        [gifViewToolbar setBackgroundImage:[UIImage new]
+                      forToolbarPosition:UIBarPositionAny
+                              barMetrics:UIBarMetricsDefault];
+        [gifViewToolbar setShadowImage:[UIImage new]
+                  forToolbarPosition:UIToolbarPositionAny];
+        UIBarButtonItem *shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareGif)];
+        UIBarButtonItem *deleteButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteGif)];
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(dismissPopoutGifView)];
+        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+        
+        NSMutableArray *items = [@[shareButton,flexibleSpace, deleteButton,flexibleSpace,closeButton] mutableCopy];
+        [gifViewToolbar setItems:items animated:NO];
+        gifViewToolbar.tintColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
+        [blurView addSubview:gifViewToolbar];
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+                                       initWithTarget:self
+                                       action:@selector(dismissPopoutGifView)];
+        [blurView addGestureRecognizer:tap];
+        [UIView transitionWithView:[[[UIApplication sharedApplication] delegate] window] duration:0.4 options:UIViewAnimationOptionTransitionCrossDissolve animations: ^ {
+            blurView.backgroundColor = [UIColor colorWithRed: 0.0 green: 0.0 blue: 0.0 alpha: 0.0];
+            [[[[UIApplication sharedApplication] delegate] window] addSubview:blurView];
+        } completion:nil];
+        
         [UIView animateWithDuration:0.5f animations:^{
             gifView.alpha = 1;
         }];
     }
 }
 
+- (void)dismissPopoutGifView {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UIView animateWithDuration:0.3f animations:^{
+            gifView.alpha = 0;
+            blurView.alpha = 0;
+        } completion:^(BOOL finished) {
+            [blurView removeFromSuperview];
+        }];
+    });
+}
+
+- (void)shareGif {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UIView animateWithDuration:0.3f animations:^{
+            gifView.alpha = 0;
+            blurView.alpha = 0;
+        } completion:^(BOOL finished) {
+            [blurView removeFromSuperview];
+            NSString *shareString = [NSString stringWithFormat:@"Check out this Gif I found via GifSwipe!\r\r%@\r",gifView.gif.caption];
+            [self shareText:shareString andImage:nil andUrl:[NSURL URLWithString:gifView.gif.gifLink]];
+        }];
+    });
+
+}
+
+- (void)deleteGif {
+    [likedGifs removeObjectAtIndex: selectedIndexPath];
+    [self.collectionView performBatchUpdates:^{
+        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+    } completion:nil];
+    
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject: likedGifs];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:data forKey:@"likedGifs"];
+    [defaults synchronize];
+    
+    NSURL *gifURL = [NSURL URLWithString:gifView.gif.gifLink];
+    NSString *gifFileName = [gifURL lastPathComponent];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *gifFileLocation = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:gifFileLocation error:&error];
+    if(error) {
+        NSLog(@"error in deleting: %@", error.description);
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UIView animateWithDuration:0.3f animations:^{
+            gifView.alpha = 0;
+            blurView.alpha = 0;
+        } completion:^(BOOL finished) {
+            [blurView removeFromSuperview];
+        }];
+    });
+}
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 0){
-        [likedGifs removeObjectAtIndex: selectedIndexPath];
-        [self.collectionView performBatchUpdates:^{
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
-        } completion:nil];
+        GSGif *gif = likedGifs[selectedIndexPath];
  
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject: likedGifs];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:data forKey:@"likedGifs"];
         [defaults synchronize];
+        
+        NSURL *gifURL = [NSURL URLWithString:gif.gifLink];
+        NSString *gifFileName = [gifURL lastPathComponent];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        NSString *gifFileLocation = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
+        NSError *error;
+        [[NSFileManager defaultManager] removeItemAtPath:gifFileLocation error:&error];
+        
+        [likedGifs removeObjectAtIndex: selectedIndexPath];
+        [flGifImages removeObjectAtIndex:selectedIndexPath];
+        [self.collectionView performBatchUpdates:^{
+            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+        } completion:nil];
+ 
+        
+        if(error) {
+            NSLog(@"error in deleting: %@", error.description);
+        }
     }
 }
 

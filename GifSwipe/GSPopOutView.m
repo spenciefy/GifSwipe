@@ -49,7 +49,9 @@
         caption.center = CGPointMake(CGRectGetMidX(self.bounds), self.frame.size.height - 20);
         caption.layer.backgroundColor = [UIColor whiteColor].CGColor;
         caption.textAlignment = NSTextAlignmentCenter;
+        caption.font = [UIFont fontWithName:@"Avenir-Roman" size:20];
         caption.text = self.gif.caption;
+        caption.adjustsFontSizeToFitWidth = YES;
         [self addSubview:caption];
         
         self.backgroundColor = [UIColor whiteColor];

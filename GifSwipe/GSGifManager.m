@@ -143,18 +143,18 @@
 
 - (GSGif *)gifForJSONPost:(NSDictionary *)jsonPost{
     NSString *url = jsonPost[@"url"];
-    NSString *urlWithoutV = [url stringByReplacingOccurrencesOfString:@".gifv" withString:@".gif"];
+   // NSString *urlWithoutV = [url stringByReplacingOccurrencesOfString:@".gifv" withString:@".gif"];
     
     NSString *caption = jsonPost[@"title"];
     if(!([caption hasPrefix:@"\""] && [caption hasSuffix:@"\""])){
         caption = [NSString stringWithFormat:@"\"%@\"", caption];
     }
-    if([urlWithoutV rangeOfString:@".gif"].location != NSNotFound) {
+    if([url rangeOfString:@".gif"].location != NSNotFound && [url rangeOfString:@".gifv"].location == NSNotFound) {
         NSString *previewLink = jsonPost[@"thumbnail"];
         if([previewLink isEqualToString:@"nsfw"] || [previewLink isEqualToString:@"default"]) {
             previewLink = nil;
         }
-        GSGif *gif = [[GSGif alloc] initWithLink:urlWithoutV previewLink:previewLink caption:caption gifID:jsonPost[@"name"]];
+        GSGif *gif = [[GSGif alloc] initWithLink:url previewLink:previewLink caption:caption gifID:jsonPost[@"name"]];
         return gif;
     } else {
         GSGif *gif = [[GSGif alloc] initWithLink:nil previewLink:nil caption:@"Gif returned only for id" gifID:jsonPost[@"name"]];
