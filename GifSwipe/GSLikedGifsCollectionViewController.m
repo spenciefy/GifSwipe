@@ -24,7 +24,6 @@
 #define IS_IPHONE_6P (IS_IPHONE && SCREEN_MAX_LENGTH == 736.0)
 
 @interface GSLikedGifsCollectionViewController () {
-    GSGif *gifObject;
     UIBarButtonItem *rightButton;
     BOOL isDeleteActive;
     int selectedIndexPath;
@@ -99,6 +98,7 @@
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     
     GSGif *gif = [likedGifs objectAtIndex: indexPath.row];
+    NSLog(@"gif: %@ at index: %li", gif.caption, (long)indexPath.row);
     UIImageView *backgroundImage = (UIImageView *)[cell viewWithTag: 1];
     backgroundImage.image = gif.blurredBackroundImage;
     
@@ -133,7 +133,6 @@
     [cell addSubview: delete];
     
     return cell;
-    
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
@@ -161,10 +160,12 @@
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Wait" message:@"Are you sure you want to delete this Gif from your liked Gifs?" delegate:self cancelButtonTitle:@"Delete" otherButtonTitles:@"Cancel", nil];
         [alert show];
     } else {
-        gifObject = [likedGifs objectAtIndex: indexPath.row];
-        GSPopOutView *gifView = [[GSPopOutView alloc] initWithFrame: CGRectMake(0, 0, self.view.frame.size.width/1.5, self.view.frame.size.height/1.5)];
-        [gifView setGifName: @"loading"];
-        [gifView setGifText: gifObject.caption];
+        GSPopOutView *gifView = [[GSPopOutView alloc] initWithFrame: CGRectMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame), self.view.frame.size.width/1.5, self.view.frame.size.height/1.5)];
+        gifView.center = CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame));
+        NSLog(@"passing: %@", likedGifs[indexPath.row]);
+        gifView.gif = likedGifs[indexPath.row];
+        [gifView loadGif];
+        [self.view addSubview:gifView];
     }
 }
 

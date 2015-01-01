@@ -9,7 +9,10 @@
 #import "GSPopOutView.h"
 #import "FLAnimatedImage.h"
 
-@implementation GSPopOutView
+@implementation GSPopOutView {
+    FLAnimatedImageView *gifImageView;
+    UILabel *caption;
+}
 
 /*
 // Only override drawRect: if you perform custom drawing.
@@ -22,21 +25,19 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        NSString *path=[[NSBundle mainBundle]pathForResource:gifName ofType:@"gif"];
-        NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
-        FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
-        FLAnimatedImageView *gifImageView;
+ 
         gifImageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds), self.frame.size.width, self.frame.size.height)];
         gifImageView.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds) - 20);
         gifImageView.contentMode = UIViewContentModeScaleAspectFit;
-        gifImageView.animatedImage = gifImage;
-        UILabel *caption = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 20)];
+        [self addSubview: gifImageView];
+
+        
+        caption = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 20)];
         caption.center = CGPointMake(CGRectGetMidX(self.bounds), self.frame.size.height - 10);
-        caption.text = gifText;
         caption.layer.backgroundColor = [UIColor whiteColor].CGColor;
         caption.textAlignment = NSTextAlignmentCenter;
         [self addSubview:caption];
-        [self addSubview: gifImageView];
+        
         self.backgroundColor = [UIColor whiteColor];
         self.layer.cornerRadius = 5.f;
         self.layer.masksToBounds = YES;
@@ -46,12 +47,18 @@
     return self;
 }
 
-- (void)setGifName:(NSString *)name {
-    gifName = name;
+- (void)loadGif {
+    NSURL *gifURL = [NSURL URLWithString:self.gif.gifLink];
+    NSString *gifFileName = [gifURL lastPathComponent];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *gifFileLocation = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
+    NSData *gifData = [NSData dataWithContentsOfFile:gifFileLocation];
+    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
+    
+    gifImageView.animatedImage = gifImage;
+    caption.text = self.gif.caption;
 }
 
--(void)setGifText:(NSString *)text {
-    gifText = text;
-}
 
 @end

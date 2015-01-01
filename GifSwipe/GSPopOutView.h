@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "GSGif.h"
 
-@interface GSPopOutView : UIView {
-    NSString *gifName;
-    NSString *gifText;
-}
+@interface GSPopOutView : UIView 
 
-- (void)setGifName:(NSString *)name;
-- (void)setGifText:(NSString *)text;
+@property (strong, nonatomic) GSGif *gif;
+
+- (void)loadGif;
+
 @end

@@ -174,9 +174,6 @@
     NSString *gifFileName = [gifURL lastPathComponent];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-//    NSString *oldFilePath = [documentsDirectory stringByAppendingPathComponent:gifFileName];
-//    NSString *newFilePath = [NSString stringWithFormat:@"%@/liked_gifs/",documentsDirectory];
-//    NSString *newLikedPath = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
 
     NSString *fromGifFinalPath = [documentsDirectory stringByAppendingPathComponent:gifFileName];
     NSString *toGifFolderPath = [documentsDirectory stringByAppendingPathComponent:@"liked_gifs"];
