@@ -25,12 +25,17 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
- 
+        
+        UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        backgroundImage.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
+        backgroundImage.image = self.gif.blurredBackroundImage;
+        NSLog(@"seferwergwergwre %@", self.gif.blurredBackroundImage);
+        [self addSubview: backgroundImage];
+        
         gifImageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds), self.frame.size.width, self.frame.size.height)];
         gifImageView.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds) - 20);
         gifImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview: gifImageView];
-
         
         caption = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 20)];
         caption.center = CGPointMake(CGRectGetMidX(self.bounds), self.frame.size.height - 10);

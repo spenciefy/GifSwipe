@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Pods-GifSwipe-AFNetworking.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
+		</dict>
 		<key>Pods-GifSwipe-BlurImageProcessor.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -52,12 +57,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>1E38B77048A9059FB895D2F1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>244D333885BD1E9B6634DD08</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>2AB00ECC0B01923B0ADEBC5B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>31CCEDB6536736E2E81FC048</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -73,6 +88,11 @@
 			<true/>
 		</dict>
 		<key>3C8BC59A30AB3989B92B7A1B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>65A90E3E024C43473901E4EF</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -112,7 +132,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>8342799E854C4871BD632297</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>8970695C360C3A906BCEAF3D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9E52A072DEFC70180D2449D3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -122,7 +152,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>A9F75DA063D592C0490EEBE1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>E16F4FEBD6091CAED50BA689</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F0E2FC6D1626EF96ECE2B047</key>
 		<dict>
 			<key>primary</key>
 			<true/>
