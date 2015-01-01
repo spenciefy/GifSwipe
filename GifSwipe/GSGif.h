@@ -15,7 +15,7 @@
 @property (nonatomic, strong) NSString *gifPreviewLink;
 @property (nonatomic, strong) NSString *caption;
 @property (nonatomic, strong) NSString *gifID;
-@property (nonatomic, strong) NSString *gifFileLocation;
+@property (nonatomic, strong) NSData *gifData;
 @property (nonatomic, strong) UIImage *blurredBackroundImage;
 
 - (instancetype)initWithLink:(NSString *)link previewLink:(NSString *)pLink caption:(NSString *)caption gifID:(NSString *)theID;

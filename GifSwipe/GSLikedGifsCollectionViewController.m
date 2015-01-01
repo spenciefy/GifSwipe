@@ -28,6 +28,8 @@
     UIBarButtonItem *rightButton;
     BOOL isDeleteActive;
     int selectedIndexPath;
+    
+    NSMutableArray *flGifImages;
 }
 @end
 
@@ -64,10 +66,26 @@
     } else if (IS_IPHONE_6P) {
         flow.minimumLineSpacing = self.view.frame.size.width/10;
     }
+    
+    flGifImages = [[NSMutableArray alloc] init];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-
+    for(GSGif *gif in likedGifs) {
+        NSURL *gifURL = [NSURL URLWithString:gif.gifLink];
+        NSString *gifFileName = [gifURL lastPathComponent];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        NSString *gifFileLocation = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
+        NSData *gifData = [NSData dataWithContentsOfFile:gifFileLocation];
+        
+        FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
+        [flGifImages addObject:gifImage];
+        if(flGifImages.count == likedGifs.count) {
+            [self.collectionView reloadData];
+        }
+    }
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
@@ -84,17 +102,16 @@
     UIImageView *backgroundImage = (UIImageView *)[cell viewWithTag: 1];
     backgroundImage.image = gif.blurredBackroundImage;
     
-    NSData *gifData = [NSData dataWithContentsOfFile:gif.gifFileLocation];
-    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
-
-    FLAnimatedImageView *gifImageView = [[FLAnimatedImageView alloc] initWithFrame: CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.width)];
-    
-    gifImageView.center = CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMidY(cell.bounds));
-    gifImageView.clipsToBounds = YES;
-    gifImageView.contentMode = UIViewContentModeScaleAspectFit;
-    gifImageView.animatedImage = gifImage;
-    [cell addSubview: gifImageView];
-    
+    if(flGifImages.count > 0){
+        FLAnimatedImage *gifImage = [flGifImages objectAtIndex:indexPath.row];
+        FLAnimatedImageView *gifImageView = [[FLAnimatedImageView alloc] initWithFrame: CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.width)];
+        
+        gifImageView.center = CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMidY(cell.bounds));
+        gifImageView.clipsToBounds = YES;
+        gifImageView.contentMode = UIViewContentModeScaleAspectFit;
+        gifImageView.animatedImage = gifImage;
+        [cell addSubview: gifImageView];
+    }
     cell.backgroundColor = [UIColor whiteColor];
     cell.layer.cornerRadius = 5.f;
     cell.layer.masksToBounds = YES;
@@ -140,7 +157,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if(isDeleteActive){
-        selectedIndexPath = indexPath.row;
+        selectedIndexPath = (int)indexPath.row;
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Wait" message:@"Are you sure you want to delete this Gif from your liked Gifs?" delegate:self cancelButtonTitle:@"Delete" otherButtonTitles:@"Cancel", nil];
         [alert show];
     } else {

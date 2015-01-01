@@ -67,16 +67,18 @@
                 GSGif *gif = [self gifForJSONPost:posts[i][@"data"]];
                 if(gif.gifLink) {
                     NSURL *gifURL = [NSURL URLWithString:gif.gifLink];
-                    NSURLRequest *gifURLRequest = [NSURLRequest requestWithURL:gifURL];
                     NSString *gifFileName = [gifURL lastPathComponent];
                     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
                     NSString *documentsDirectory = [paths objectAtIndex:0];
                     NSString *gifFileLocation = [documentsDirectory stringByAppendingPathComponent:gifFileName];
-                    gif.gifFileLocation = gifFileLocation;
+                    
+                    NSURLRequest *gifURLRequest = [NSURLRequest requestWithURL:gifURL];
                     AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:gifURLRequest];
                     [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id data) {
                         NSData *gifData = [[NSData alloc] initWithData:data];
                         [gifData writeToFile:gifFileLocation atomically:YES];
+                        gif.gifData = gifData;
+                        
                         if(gif && ![self.addedGifIDs containsObject:gif.gifID] && ![self.displayedGifIDs containsObject:gif.gifID]) {
                             [self.gifs addObject:gif];
                             [gifsIncludingNonGifs addObject:gif];
@@ -93,7 +95,7 @@
                         }
                         
                     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                        NSLog(@"error in urlsession: %@ with location%@, giflink: %@", error.description, gif.gifFileLocation, gif.gifLink);
+                        NSLog(@"error in urlsession: %@ with location%@, giflink: %@", error.description, gifFileLocation, gif.gifLink);
                         completionBlock(nil,nil,error);
                     }];
                     [requestOperation start];

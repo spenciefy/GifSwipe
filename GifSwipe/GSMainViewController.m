@@ -169,18 +169,48 @@
         }
     }
     
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSURL *gifURL = [NSURL URLWithString:self.currentGifView.gif.gifLink];
+    NSString *gifFileName = [gifURL lastPathComponent];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+//    NSString *oldFilePath = [documentsDirectory stringByAppendingPathComponent:gifFileName];
+//    NSString *newFilePath = [NSString stringWithFormat:@"%@/liked_gifs/",documentsDirectory];
+//    NSString *newLikedPath = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
+
+    NSString *fromGifFinalPath = [documentsDirectory stringByAppendingPathComponent:gifFileName];
+    NSString *toGifFolderPath = [documentsDirectory stringByAppendingPathComponent:@"liked_gifs"];
+    NSString *toGifFinalPath = [toGifFolderPath stringByAppendingPathComponent:gifFileName];
+    
     if (direction == MDCSwipeDirectionRight) {
         [self.likedGifs addObject:self.currentGifView.gif];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            NSError *error;
+            BOOL isDirectory;
+            if(![manager fileExistsAtPath:toGifFolderPath isDirectory:&isDirectory]){
+                if(!isDirectory)
+                    [manager createDirectoryAtPath:toGifFolderPath withIntermediateDirectories:NO attributes:nil error:&error];
+            }
+            
+            if(![manager fileExistsAtPath:toGifFinalPath] && [manager fileExistsAtPath:fromGifFinalPath]) {
+                [manager moveItemAtPath:fromGifFinalPath toPath:toGifFinalPath error:&error];
+                if(error) {
+                    NSLog(@"Error in moving liked gif %@", error.description);
+                } else {
+                    NSLog(@"Moved liked gif %@ to %@", gifFileName, toGifFinalPath);
+                }
+            }
+
             NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [self.likedGifs mutableCopy]];
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:data forKey:@"likedGifs"];
             [defaults synchronize];
         });
     } else {
-        NSFileManager *fileManager = [NSFileManager defaultManager];
+
+        NSString *gifFileLocation = [documentsDirectory stringByAppendingPathComponent:gifFileName];
         NSError *error;
-        BOOL success = [fileManager removeItemAtPath:self.currentGifView.gif.gifFileLocation error:&error];
+        BOOL success = [manager removeItemAtPath:gifFileLocation error:&error];
         if (success) {
             NSLog(@"removed noped gif, %@", self.currentGifView.gif.caption);
         } else {

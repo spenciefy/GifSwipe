@@ -29,20 +29,14 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-//    // Get all files in documents directory.
-//    NSArray *allFiles = [fileManager contentsOfDirectoryAtURL:self.docDirectoryURL
-//                                   includingPropertiesForKeys:nil
-//                                                      options:NSDirectoryEnumerationSkipsHiddenFiles
-//                                                        error:nil];
-//    for (int i=0; i<[allFiles count]; i++) {
-//        [fileManager removeItemAtURL:[allFiles objectAtIndex:i] error:nil];
-//    }
-    
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-       // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    //delete downloaded gifs
+    NSString *folderPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSError *error = nil;
+    for (NSString *file in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:folderPath error:&error]) {
+        if(![file isEqualToString:@"liked_gifs"]){
+        [[NSFileManager defaultManager] removeItemAtPath:[folderPath stringByAppendingPathComponent:file] error:&error];
+        }
+    }
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {

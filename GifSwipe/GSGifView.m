@@ -77,7 +77,12 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
                              }];
         [self addSubview:_backgroundImageView];
     }
-    NSData *gifData = [NSData dataWithContentsOfFile:self.gif.gifFileLocation];
+    NSURL *gifURL = [NSURL URLWithString:self.gif.gifLink];
+    NSString *gifFileName = [gifURL lastPathComponent];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *gifFileLocation = [documentsDirectory stringByAppendingPathComponent:gifFileName];
+    NSData *gifData = [NSData dataWithContentsOfFile:gifFileLocation];
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
     _gifImageView = [[FLAnimatedImageView alloc] initWithFrame:imageFrame];
     _gifImageView.clipsToBounds = YES;
