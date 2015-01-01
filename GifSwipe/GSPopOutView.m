@@ -12,6 +12,7 @@
 @implementation GSPopOutView {
     FLAnimatedImageView *gifImageView;
     UILabel *caption;
+    UIImageView *backgroundImage;
 }
 
 /*
@@ -25,11 +26,8 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
-        UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        backgroundImage = [[UIImageView alloc] initWithFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         backgroundImage.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
-        backgroundImage.image = self.gif.blurredBackroundImage;
-        NSLog(@"seferwergwergwre %@", self.gif.blurredBackroundImage);
         [self addSubview: backgroundImage];
         
         gifImageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds), self.frame.size.width, self.frame.size.height)];
@@ -59,8 +57,11 @@
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *gifFileLocation = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
     NSData *gifData = [NSData dataWithContentsOfFile:gifFileLocation];
+    
+   
     FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
     
+    backgroundImage.image = self.gif.blurredBackroundImage;
     gifImageView.animatedImage = gifImage;
     caption.text = self.gif.caption;
 }
