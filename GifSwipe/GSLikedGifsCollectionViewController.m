@@ -160,11 +160,14 @@
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Wait" message:@"Are you sure you want to delete this Gif from your liked Gifs?" delegate:self cancelButtonTitle:@"Delete" otherButtonTitles:@"Cancel", nil];
         [alert show];
     } else {
-        GSPopOutView *gifView = [[GSPopOutView alloc] initWithFrame: CGRectMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame), self.view.frame.size.width/1.5, self.view.frame.size.height/1.5)];
+        GSPopOutView *gifView = [[GSPopOutView alloc] initWithFrame: CGRectMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame), self.view.frame.size.width/1.5, self.view.frame.size.height/1.5) gif:likedGifs[indexPath.row]];
         gifView.center = CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame));
-        NSLog(@"passing: %@", likedGifs[indexPath.row]);
-        gifView.gif = likedGifs[indexPath.row];
-        [gifView loadGif];
+        gifView.closeActionBlock = ^{
+            //put close code here
+        };
+        gifView.shareActionBlock = ^{
+            //put share code here
+        };
         [self.view addSubview:gifView];
     }
 }

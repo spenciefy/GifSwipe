@@ -9,10 +9,16 @@
 #import <UIKit/UIKit.h>
 #import "GSGif.h"
 
+typedef void (^GSPopOutViewActionBlock)();
+
 @interface GSPopOutView : UIView 
 
 @property (strong, nonatomic) GSGif *gif;
 
-- (void)loadGif;
+- (id)initWithFrame:(CGRect)frame gif:(GSGif *)gif;
+
+@property (nonatomic, strong) GSPopOutViewActionBlock shareActionBlock;
+@property (nonatomic, strong) GSPopOutViewActionBlock closeActionBlock;
+
 
 @end
