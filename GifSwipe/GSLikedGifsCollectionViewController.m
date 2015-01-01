@@ -160,15 +160,30 @@
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Wait" message:@"Are you sure you want to delete this Gif from your liked Gifs?" delegate:self cancelButtonTitle:@"Delete" otherButtonTitles:@"Cancel", nil];
         [alert show];
     } else {
+        GSGif *gif = likedGifs[indexPath.row];
         GSPopOutView *gifView = [[GSPopOutView alloc] initWithFrame: CGRectMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame), self.view.frame.size.width/1.15, self.view.frame.size.height/1.15 - self.navigationController.navigationBar.frame.size.height) gif:likedGifs[indexPath.row]];
         gifView.center = CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame) + self.navigationController.navigationBar.frame.size.height);
+        gifView.alpha = 0;
+        __weak GSPopOutView *wGifView = gifView;
         gifView.closeActionBlock = ^{
-            //put close code here
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [UIView animateWithDuration:0.3f animations:^{
+                    wGifView.alpha = 0;
+                } completion:^(BOOL finished) {
+                    [wGifView removeFromSuperview];
+                }];
+            });
         };
         gifView.shareActionBlock = ^{
-            //put share code here
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *shareString = [NSString stringWithFormat:@"Check out this Gif I found via GifSwipe!\r\r%@\r",gif.caption];
+                [self shareText:shareString andImage:nil andUrl:[NSURL URLWithString:gif.gifLink]];
+            });
         };
         [self.view addSubview:gifView];
+        [UIView animateWithDuration:0.5f animations:^{
+            gifView.alpha = 1;
+        }];
     }
 }
 
@@ -195,6 +210,24 @@
         rightButton.title = @"Edit";
         isDeleteActive = FALSE;
     }
+}
+
+- (void)shareText:(NSString *)text andImage:(UIImage *)image andUrl:(NSURL *)url
+{
+    NSMutableArray *sharingItems = [NSMutableArray new];
+    
+    if (text) {
+        [sharingItems addObject:text];
+    }
+    if (image) {
+        [sharingItems addObject:image];
+    }
+    if (url) {
+        [sharingItems addObject:url];
+    }
+    
+    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
+    [self presentViewController:activityController animated:YES completion:nil];
 }
 
 @end
