@@ -60,7 +60,7 @@
     }
     return self;
 }
-
+    
 - (void)shareTapped {
     if (self.shareActionBlock) {
         self.shareActionBlock();
