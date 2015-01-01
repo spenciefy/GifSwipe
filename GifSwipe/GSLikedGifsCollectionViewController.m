@@ -34,7 +34,10 @@
 }
 @end
 
-@implementation GSLikedGifsCollectionViewController
+@implementation GSLikedGifsCollectionViewController {
+    UILabel *nullStateLabel;
+    FLAnimatedImageView *nullStateImageView;
+}
 @synthesize likedGifs;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -73,22 +76,26 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    for(GSGif *gif in likedGifs) {
-        NSURL *gifURL = [NSURL URLWithString:gif.gifLink];
-        NSString *gifFileName = [gifURL lastPathComponent];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];
-        NSString *gifFileLocation = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
-        NSData *gifData = [NSData dataWithContentsOfFile:gifFileLocation];
-        
-        FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
-        if(gifImage) {
-            [flGifImages addObject:gifImage];
-        } else {
-            [likedGifs removeObject:gif];
-        }
-        if(flGifImages.count == likedGifs.count) {
-            [self.collectionView reloadData];
+    if(likedGifs.count == 0) {
+        [self setupNullState];
+    } else {
+        for(GSGif *gif in likedGifs) {
+            NSURL *gifURL = [NSURL URLWithString:gif.gifLink];
+            NSString *gifFileName = [gifURL lastPathComponent];
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *documentsDirectory = [paths objectAtIndex:0];
+            NSString *gifFileLocation = [NSString stringWithFormat:@"%@/liked_gifs/%@",documentsDirectory, gifFileName];
+            NSData *gifData = [NSData dataWithContentsOfFile:gifFileLocation];
+            
+            FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:gifData];
+            if(gifImage) {
+                [flGifImages addObject:gifImage];
+            } else {
+                [likedGifs removeObject:gif];
+            }
+            if(flGifImages.count == likedGifs.count) {
+                [self.collectionView reloadData];
+            }
         }
     }
 }
@@ -319,6 +326,30 @@
     
     UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
     [self presentViewController:activityController animated:YES completion:nil];
+}
+
+- (void)setupNullState {
+    nullStateImageView = [[FLAnimatedImageView alloc] init];
+    nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
+    nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
+    nullStateImageView.contentMode = UIViewContentModeScaleAspectFit;
+    NSString *path=[[NSBundle mainBundle]pathForResource:@"nullstate" ofType:@"gif"];
+    NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+    
+    FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+    nullStateImageView.animatedImage = gifImage;
+    [self.view addSubview:nullStateImageView];
+    
+    nullStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 30, 300, 500)];
+    nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 80);
+    nullStateLabel.font = [UIFont fontWithName:@"Avenir-Roman" size:30];
+    nullStateLabel.textColor = [UIColor darkGrayColor];//[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
+    nullStateLabel.numberOfLines = 5;
+    nullStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    nullStateLabel.textAlignment = NSTextAlignmentCenter;
+    nullStateLabel.text = @"Looks like you haven't swiped right to like any Gifs.";
+    
+    [self.view addSubview:nullStateLabel];
 }
 
 @end

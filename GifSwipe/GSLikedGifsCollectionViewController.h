@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FLAnimatedImage.h"
 
 @interface GSLikedGifsCollectionViewController : UICollectionViewController
 
-@property (nonatomic, strong) NSMutableArray* likedGifs;
+@property (nonatomic) NSMutableArray* likedGifs;
 
 @end

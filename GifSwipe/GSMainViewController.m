@@ -41,49 +41,47 @@
 }
 
 - (void)setupMainView {
+    
 #warning temporarily commented out so its easier to load stuff... overlap
-    //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    //    NSData *data = [defaults objectForKey:@"displayedGifIDs"];
-    //    if(data) {
-    //    [GSGifManager sharedInstance].displayedGifIDs = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    //    NSLog(@"loaded displayedGifIDs: %@",  [GSGifManager sharedInstance].displayedGifIDs);
-    //    }
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSData *data = [defaults objectForKey:@"displayedGifIDs"];
+    if(data) {
+    [GSGifManager sharedInstance].displayedGifIDs = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    NSLog(@"loaded displayedGifIDs: %@",  [GSGifManager sharedInstance].displayedGifIDs);
+    }
     
     //Load liked gifs from defaults
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.likedGifs = [NSKeyedUnarchiver unarchiveObjectWithData:[defaults objectForKey:@"likedGifs"]];
     if(!self.likedGifs) {
         self.likedGifs = [[NSMutableArray alloc] init];
     }
     
-    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"5" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
+    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"20" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
         if(!error){
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 NSLog(@"Got first batch of gifs: %lu", (unsigned long)[GSGifManager sharedInstance].gifs.count);
-            
-                if([GSGifManager sharedInstance].gifs.count < 4) {
-                    NSLog(@"Loading more gif views because not enough gifs found");
-                    [self loadMoreGifs];
-                }
 
                 //Load front and back views
                 self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
                 self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
                 
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        //Update UI on main thread
-                        self.frontGifView.alpha = 0;
-                        self.backGifView.alpha = 0;
-                        [self.view addSubview:self.frontGifView];
-                        [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
-                        
-                        [UIView animateWithDuration:0.3f animations:^{
-                            self.frontGifView.alpha = 1;
-                            self.backGifView.alpha = 1;
-                        }];
-                        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
-                        [self.navigationItem.leftBarButtonItem setEnabled:YES];
-                    });
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    //Update UI on main thread
+                    self.frontGifView.alpha = 0;
+                    self.backGifView.alpha = 0;
+                    [self.view addSubview:self.frontGifView];
+                    [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                    
+                    [UIView animateWithDuration:0.3f animations:^{
+                        self.frontGifView.alpha = 1;
+                        self.backGifView.alpha = 1;
+                    }];
+                    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+                    [self.navigationItem.leftBarButtonItem setEnabled:YES];
+                    
+                    NSTimer *timer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(checkIfNeedToReload:) userInfo:nil repeats:YES];
+                    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+                });
 
                 if(!currentlyAddingGifs) {
                     [self loadMoreGifs];
@@ -218,18 +216,82 @@
         [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
         [self.navigationItem.leftBarButtonItem setEnabled:NO];
     }
-        if(self.currentGifView) {
-            [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [GSGifManager sharedInstance].displayedGifIDs];
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [defaults setObject:data forKey:@"displayedGifIDs"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            //  NSLog(@"Saved displayedGifIDs in userdefaults: %@", [GSGifManager sharedInstance].displayedGifIDs);
-        }
+    if(self.currentGifView) {
+        [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [GSGifManager sharedInstance].displayedGifIDs];
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:data forKey:@"displayedGifIDs"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        //  NSLog(@"Saved displayedGifIDs in userdefaults: %@", [GSGifManager sharedInstance].displayedGifIDs);
+    }
     
     self.frontGifView = self.backGifView;
     
-    if([[GSGifManager sharedInstance].gifs count] > 0){
+    if([[GSGifManager sharedInstance].gifs count] > 2){
+        if(!self.frontGifView) {
+            self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
+            self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //Update UI on main thread
+                self.frontGifView.alpha = 0;
+                self.backGifView.alpha = 0;
+                [self.view addSubview:self.frontGifView];
+                [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                
+                [UIView animateWithDuration:0.3f animations:^{
+                    self.frontGifView.alpha = 1;
+                    self.backGifView.alpha = 1;
+                }];
+                [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+                [self.navigationItem.leftBarButtonItem setEnabled:YES];
+            });
+        } else {
+            self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+            self.backGifView.frame = [self backGifViewFrame];
+            self.backGifView.alpha = 0.f;
+            [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+            [UIView animateWithDuration:0.5
+                                  delay:0.0
+                                options:UIViewAnimationOptionCurveEaseInOut
+                             animations:^{
+                                 self.backGifView.alpha = 1.f;
+                             } completion:nil];
+        }
+        
+    } else {
+        self.backGifView = nil;
+    }
+    
+    NSLog(@"number of gifs: %lu", (unsigned long)[[GSGifManager sharedInstance].gifs count]);
+    
+    
+}
+
+
+- (void)checkIfNeedToReload:(id)sender {
+    if(self.backGifView == nil && self.frontGifView == nil) {
+        if([GSGifManager sharedInstance].gifs.count >= 3) {
+            //Load front and back views
+            self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
+            self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //Update UI on main thread
+                self.frontGifView.alpha = 0;
+                self.backGifView.alpha = 0;
+                [self.view addSubview:self.frontGifView];
+                [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                
+                [UIView animateWithDuration:0.3f animations:^{
+                    self.frontGifView.alpha = 1;
+                    self.backGifView.alpha = 1;
+                }];
+                [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+                [self.navigationItem.leftBarButtonItem setEnabled:YES];
+            });
+        }
+    } else if(self.backGifView == nil){
         self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
         self.backGifView.frame = [self backGifViewFrame];
         self.backGifView.alpha = 0.f;
@@ -240,14 +302,7 @@
                          animations:^{
                              self.backGifView.alpha = 1.f;
                          } completion:nil];
-        
-    } else {
-        self.backGifView = nil;
     }
-    
-    NSLog(@"number of gifs: %lu", (unsigned long)[[GSGifManager sharedInstance].gifs count]);
-    
-    
 }
 
 #pragma mark - Internal Methods
