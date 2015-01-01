@@ -45,8 +45,8 @@
         gifImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview: gifImageView];
         
-        caption = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 20)];
-        caption.center = CGPointMake(CGRectGetMidX(self.bounds), self.frame.size.height - 10);
+        caption = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 40)];
+        caption.center = CGPointMake(CGRectGetMidX(self.bounds), self.frame.size.height - 20);
         caption.layer.backgroundColor = [UIColor whiteColor].CGColor;
         caption.textAlignment = NSTextAlignmentCenter;
         caption.text = self.gif.caption;
