@@ -11,6 +11,6 @@
 
 @interface GSLikedGifsCollectionViewController : UICollectionViewController
 
-@property (nonatomic) NSMutableArray* likedGifs;
+@property (nonatomic) NSMutableArray *likedGifs;
 
 @end

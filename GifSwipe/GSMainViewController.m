@@ -16,7 +16,6 @@
 @interface GSMainViewController ()
 
 @property (nonatomic, strong) NSMutableArray *gifs;
-@property (nonatomic, strong) NSMutableArray *likedGifs;
 
 @end
 
@@ -34,9 +33,6 @@
     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
     [self.navigationItem.leftBarButtonItem setEnabled:NO];
     
-    self.likedGifs = [[NSMutableArray alloc]init];
-
-    
     [GSGifManager sharedInstance].displayedGifIDs = [[NSMutableArray alloc]init];
 }
 
@@ -51,12 +47,12 @@
     }
     
     //Load liked gifs from defaults
-    self.likedGifs = [NSKeyedUnarchiver unarchiveObjectWithData:[defaults objectForKey:@"likedGifs"]];
-    if(!self.likedGifs) {
-        self.likedGifs = [[NSMutableArray alloc] init];
+    [GSGifManager sharedInstance].likedGifs = [NSKeyedUnarchiver unarchiveObjectWithData:[defaults objectForKey:@"likedGifs"]];
+    if(![GSGifManager sharedInstance].likedGifs) {
+        [GSGifManager sharedInstance].likedGifs = [[NSMutableArray alloc] init];
     }
     
-    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"20" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
+    [[GSGifManager sharedInstance] fetchGifsFrom:@"0" limit:@"10" new:NO withCompletionBlock:^(NSArray *gifs, NSArray *gifIDs, NSError *error) {
         if(!error){
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 NSLog(@"Got first batch of gifs: %lu", (unsigned long)[GSGifManager sharedInstance].gifs.count);
@@ -91,6 +87,7 @@
             //Error in fetching
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self setNullStateNoConnection];
+                nullStateLabel.text = @"Something went wrong when trying to find gifs. Try quitting the app.";
             });
         }
     }];
@@ -110,12 +107,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        [self setupNullState];
-        if([self hasNetwork]) {
-            [self setupMainView];
-        } else {
-            [self setNullStateNoConnection];
-        }
+        [self hasNetwork];
         
         [self becomeFirstResponder];
     });
@@ -185,7 +177,7 @@
             }
             
             if(![manager fileExistsAtPath:toGifFinalPath] && [manager fileExistsAtPath:fromGifFinalPath]) {
-                [self.likedGifs addObject:self.currentGifView.gif];
+                [[GSGifManager sharedInstance].likedGifs addObject:self.currentGifView.gif];
                 [manager moveItemAtPath:fromGifFinalPath toPath:toGifFinalPath error:&error];
                 if(error) {
                    // NSLog(@"Error in moving liked gif %@", error.description);
@@ -194,7 +186,7 @@
                 }
             }
 
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [self.likedGifs mutableCopy]];
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [[GSGifManager sharedInstance].likedGifs mutableCopy]];
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:data forKey:@"likedGifs"];
             [defaults synchronize];
@@ -437,20 +429,43 @@
     });
 }
 
-- (BOOL)hasNetwork {
+- (void)hasNetwork {
     Reachability *myNetwork = [Reachability reachabilityWithHostname:@"google.com"];
     NetworkStatus myStatus = [myNetwork currentReachabilityStatus];
     
     if(myStatus == NotReachable) {
-        return NO;
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+        [self setupNullState];
+        [self setNullStateNoConnection];
+        });
     } else{
         if(myStatus == ReachableViaWWAN) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hm..." message:@"Seems like you're connected via cellular data. This app uses A LOT of data (downloading large gifs), so beware!" delegate:self cancelButtonTitle:@"Got it." otherButtonTitles:nil];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hm..." message:@"Looks like you're connected via cellular data. This app uses A LOT of data (downloading large 2-10 MB sized gifs), so beware!" delegate:self cancelButtonTitle:@"I'm willing to use my data." otherButtonTitles:@"Hm.. I don't have much data.", nil];
             [alert show];
         } else if(myStatus == ReachableViaWiFi) {
-        
+            dispatch_async(dispatch_get_main_queue(), ^{
+            [self setupNullState];
+            });
+            [self setupMainView];
         }
-        return YES;
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(alertView.cancelButtonIndex == buttonIndex){
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+        [self setupNullState];
+        [self setupMainView];
+        });
+    }
+    if (buttonIndex == 1){
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+        [self setupNullState];
+        [self setNullStateNoConnection];
+        });
     }
 }
 
@@ -484,7 +499,7 @@
 {
     if([[segue identifier] isEqualToString:@"likedSegue"]){
         GSLikedGifsCollectionViewController *likedCollectionVC = [segue destinationViewController];
-        likedCollectionVC.likedGifs = self.likedGifs;
+        likedCollectionVC.likedGifs = [[GSGifManager sharedInstance].likedGifs mutableCopy];
     }
 }
 @end

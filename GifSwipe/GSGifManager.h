@@ -20,6 +20,7 @@
 @property (nonatomic, strong) NSMutableArray *addedGifIDs;
 @property (nonatomic, strong) NSMutableArray *gifs;
 @property (nonatomic, strong) NSMutableArray *displayedGifIDs;
+@property (nonatomic, strong) NSMutableArray *likedGifs;
 @property (nonatomic, strong) NSString *lastGifID;
 @property (nonatomic, assign) int newGifIndex;
 @property (nonatomic, assign) BOOL loadGifs;

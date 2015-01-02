@@ -13,6 +13,7 @@
 
 //https://graph.facebook.com/v2.2/201636233240648/feed?access_token=679031018880162|p-4FAOxNNYD-AsdY7KNuTWLS88o
 #define ACCESS_TOKEN @"679031018880162|p-4FAOxNNYD-AsdY7KNuTWLS88o"
+
 @implementation GSGifManager
 
 + (GSGifManager *)sharedInstance {
@@ -26,6 +27,7 @@
         _sharedInstance.newGifIndex = 0;
         _sharedInstance.loadGifs = NO;
         _sharedInstance.lastGifID = @"";
+        _sharedInstance.likedGifs = [[NSMutableArray alloc] init];
     });
     return _sharedInstance;
 }
@@ -65,8 +67,8 @@
             NSMutableArray *gifsIncludingNonGifs = [[NSMutableArray alloc] init];
             for(int i = 0; i < posts.count; i++) {
                 GSGif *gif = [self gifForJSONPost:posts[i][@"data"]];
-                if(gif.gifLink) {
-                    if(![self.displayedGifIDs containsObject:gif.gifID]) {
+             //   if(((!new && ![self.displayedGifIDs containsObject:gif.gifID]) || new)) {
+                    if(gif.gifLink) {
                         NSURL *gifURL = [NSURL URLWithString:gif.gifLink];
                         NSString *gifFileName = [gifURL lastPathComponent];
                         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -84,7 +86,7 @@
                                 [self.gifs addObject:gif];
                                 [gifsIncludingNonGifs addObject:gif];
                                 [self.addedGifIDs addObject:gif.gifID];
-                                NSLog(@"added gif %@ data with: %@",gif.caption, gifFileLocation);
+                                NSLog(@"added gif %@ data with: %@",gif.gifID, gifFileLocation);
                             }
                             if(new) {
                                 if(i == posts.count-1) {
@@ -114,7 +116,7 @@
                             }
                         }
                     }
-                }
+             //   }
             }
         }
     });

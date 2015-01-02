@@ -10,6 +10,7 @@
 #import "GSGif.h"
 #import "GSGifView.h"
 #import "GSPopOutView.h"
+#import "GSGifManager.h"
 
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
@@ -73,13 +74,14 @@
     
     flGifImages = [[NSMutableArray alloc] init];
 
+    if(likedGifs.count == 0) {
+        [self setupNullState];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    if(likedGifs.count == 0) {
-        [self setupNullState];
-    } else {
-        for(GSGif *gif in likedGifs) {
+    if(likedGifs.count != 0) {
+        for(GSGif *gif in [likedGifs copy]) {
             NSURL *gifURL = [NSURL URLWithString:gif.gifLink];
             NSString *gifFileName = [gifURL lastPathComponent];
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -239,10 +241,16 @@
 }
 
 - (void)deleteGif {
-    [likedGifs removeObjectAtIndex: selectedIndexPath];
+    [likedGifs removeObjectAtIndex:selectedIndexPath];
+    [flGifImages removeObjectAtIndex:selectedIndexPath];
+    [[GSGifManager sharedInstance].likedGifs removeObjectAtIndex:selectedIndexPath];
     [self.collectionView performBatchUpdates:^{
         [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
-    } completion:nil];
+    } completion:^(BOOL finished) {
+        if(self.likedGifs.count == 0) {
+            [self setupNullState];
+        }
+    }];
     
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject: likedGifs];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -269,6 +277,7 @@
         }];
     });
 }
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 0){
         GSGif *gif = likedGifs[selectedIndexPath];
@@ -288,9 +297,15 @@
         
         [likedGifs removeObjectAtIndex: selectedIndexPath];
         [flGifImages removeObjectAtIndex:selectedIndexPath];
+        [[GSGifManager sharedInstance].likedGifs removeObjectAtIndex:selectedIndexPath];
+
         [self.collectionView performBatchUpdates:^{
             [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
-        } completion:nil];
+        } completion:^(BOOL finished) {
+            if(self.likedGifs.count == 0) {
+                [self setupNullState];
+            }
+        }];
  
         
         if(error) {
@@ -310,22 +325,24 @@
     }
 }
 
-- (void)shareText:(NSString *)text andImage:(UIImage *)image andUrl:(NSURL *)url
-{
-    NSMutableArray *sharingItems = [NSMutableArray new];
-    
-    if (text) {
-        [sharingItems addObject:text];
-    }
-    if (image) {
-        [sharingItems addObject:image];
-    }
-    if (url) {
-        [sharingItems addObject:url];
-    }
-    
-    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
-    [self presentViewController:activityController animated:YES completion:nil];
+- (void)shareText:(NSString *)text andImage:(UIImage *)image andUrl:(NSURL *)url {
+    dispatch_async(dispatch_get_main_queue(), ^() {
+
+        NSMutableArray *sharingItems = [NSMutableArray new];
+        
+        if (text) {
+            [sharingItems addObject:text];
+        }
+        if (image) {
+            [sharingItems addObject:image];
+        }
+        if (url) {
+            [sharingItems addObject:url];
+        }
+        
+        UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
+        [self presentViewController:activityController animated:YES completion:nil];
+    });
 }
 
 - (void)setupNullState {
