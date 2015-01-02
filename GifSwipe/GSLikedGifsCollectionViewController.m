@@ -127,7 +127,6 @@
     }
     
     if (isDeleteActive) {
-        NSLog(@"cfhtbjkbghuj");
         [UIView animateWithDuration: 0.3 animations: ^ {
             cell.deleteLabel.alpha = 1.0;
         }];
