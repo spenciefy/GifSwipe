@@ -25,6 +25,8 @@
 #define IS_IPHONE_6 (IS_IPHONE && SCREEN_MAX_LENGTH == 667.0)
 #define IS_IPHONE_6P (IS_IPHONE && SCREEN_MAX_LENGTH == 736.0)
 
+#define GS_GIF_CELL_IDENTIFIER @"GS_GIF_CELL_IDENTIFIER"
+
 @interface GSLikedGifsCollectionViewController () {
     UIBarButtonItem *rightButton;
     BOOL isDeleteActive;
@@ -54,6 +56,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    [self.collectionView registerNib:[UINib nibWithNibName:@"GSGifCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"GSGifCollectionViewCell"];
+
     rightButton = [[UIBarButtonItem alloc]initWithTitle:@"Edit" style: UIBarButtonItemStylePlain target:self action:@selector(editLiked)];
     [rightButton setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                         [UIFont fontWithName:@"AvenirNext-Regular" size:20.0], NSFontAttributeName,[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1] , NSForegroundColorAttributeName,
@@ -63,6 +68,9 @@
     self.navigationItem.rightBarButtonItem = rightButton;
     isDeleteActive = FALSE;
     [[UIBarButtonItem appearance] setBackButtonTitlePositionAdjustment:UIOffsetMake(0, -60) forBarMetrics:UIBarMetricsDefault];
+    
+    [self.collectionView registerClass:[GSGifCollectionViewCell class] forCellWithReuseIdentifier:GS_GIF_CELL_IDENTIFIER];
+
     
     UICollectionViewFlowLayout *flow = (UICollectionViewFlowLayout *)self.collectionView.collectionViewLayout;
     if (IS_IPHONE_5) {
@@ -110,30 +118,27 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     
-    static NSString *identifier = @"GifCell";
     GSGif *gif = [likedGifs objectAtIndex: indexPath.row];
-
-    GSGifCollectionViewCell *cell = [[GSGifCollectionViewCell alloc] initWithAnimatedImage:[flGifImages objectAtIndex:indexPath.row] gif:gif];
+    GSGifCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:GS_GIF_CELL_IDENTIFIER forIndexPath:indexPath];
     
-    UIImageView *backgroundImage = (UIImageView *)[cell viewWithTag: 1];
-    backgroundImage.image = gif.blurredBackroundImage;
-
-    
-    UILabel *delete = (UILabel *)[cell viewWithTag: 2];
+    cell.gif = gif;
+    if(flGifImages.count > 0){
+        cell.gifImage = [flGifImages objectAtIndex:indexPath.row];
+    }
     if (isDeleteActive) {
-        if(delete.alpha == 0.0)
+        if(cell.deleteLabel.alpha == 0.0)
             [UIView animateWithDuration: 0.3 animations: ^ {
-                delete.alpha = 1.0;
+                cell.deleteLabel.alpha = 1.0;
             }];
     } else {
-        if(delete.alpha == 1.0)
+        if(cell.deleteLabel.alpha == 1.0)
             [UIView animateWithDuration: 0.3 animations: ^ {
-                delete.alpha = 0.0;
+                cell.deleteLabel.alpha = 0.0;
             }];
     }
-    [cell addSubview: delete];
     
     return cell;
+    
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{

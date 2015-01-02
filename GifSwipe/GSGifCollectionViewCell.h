@@ -11,9 +11,13 @@
 #import "GSGif.h"
 
 @interface GSGifCollectionViewCell : UICollectionViewCell
-@property (strong, nonatomic) IBOutlet UILabel *deleteLabel;
-@property (strong, nonatomic) IBOutlet UIImageView *backgroundImage;
-- (id)initWithAnimatedImage:(FLAnimatedImage *)gifImage gif:(GSGif *)gif;
+@property (strong, nonatomic) UILabel *deleteLabel;
+@property (strong, nonatomic) UIImageView *backgroundImage;
+@property (strong, nonatomic) FLAnimatedImageView *gifImageView;
+
+@property (strong, nonatomic) GSGif *gif;
+@property (strong, nonatomic) FLAnimatedImage *gifImage;
+
 
 @end
 

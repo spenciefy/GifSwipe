@@ -20,6 +20,7 @@
 @end
 
 @implementation GSMainViewController {
+    BOOL isFirstLaunch;
     BOOL currentlyAddingGifs;
     UILabel *nullStateLabel;
     FLAnimatedImageView *nullStateImageView;
@@ -37,8 +38,31 @@
 }
 
 - (void)setupMainView {
+#warning temp commented out to test
+  //  if (![[NSUserDefaults standardUserDefaults] boolForKey:@"HasLaunchedOnce"]){
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasLaunchedOnce"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        isFirstLaunch = YES;
+        //Load front and back views
+        self.welcomeGifView = [self popOnboardingWelcomeViewWithFrame:[self frontGifViewFrame]];
+        self.instructionsGifView = [self popOnboardingInstructionsViewWithFrame:[self backGifViewFrame]];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //Update UI on main thread
+            self.welcomeGifView.alpha = 0;
+            self.instructionsGifView.alpha = 0;
+            [self.view addSubview:self.welcomeGifView];
+            [self.view insertSubview:self.instructionsGifView belowSubview:self.welcomeGifView];
+            
+            [UIView animateWithDuration:0.3f animations:^{
+                self.welcomeGifView.alpha = 1;
+                self.instructionsGifView.alpha = 1;
+            }];
+        });
+ //   } else {
+  //      isFirstLaunch = NO;
+ //   }
     
-#warning temporarily commented out so its easier to load stuff... overlap
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSData *data = [defaults objectForKey:@"displayedGifIDs"];
     if(data) {
@@ -66,6 +90,9 @@
                     self.frontGifView.alpha = 0;
                     self.backGifView.alpha = 0;
                     [self.view addSubview:self.frontGifView];
+                    [self.view sendSubviewToBack:self.frontGifView];
+                    [self.view sendSubviewToBack:nullStateImageView];
+                    [self.view sendSubviewToBack:nullStateLabel];
                     [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
                     
                     [UIView animateWithDuration:0.3f animations:^{
@@ -137,127 +164,138 @@
 
 #pragma mark - MDCSwipeToChooseDelegate Protocol Methods
 
-// This is called when a user didn't fully swipe left or right.
 - (void)viewDidCancelSwipe:(UIView *)view {
     //NSLog(@"You couldn't decide on %@.", self.currentGifView.gif.caption);
 }
 
-// This is called then a user swipes the view fully left or right.
 - (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {
-    [self setNullStateLoading];
-
-    if([GSGifManager sharedInstance].gifs.count >= 10) {
-        [[GSGifManager sharedInstance] setLoadGifs:NO];
-        currentlyAddingGifs = NO;
-    } else if ([GSGifManager sharedInstance].gifs.count < 5){
-        NSLog(@"Need to load more gifs, gif count is %lu, currentladding: %d",(unsigned long)[GSGifManager sharedInstance].gifs.count, currentlyAddingGifs);
-        if(!currentlyAddingGifs){
-            [[GSGifManager sharedInstance] setLoadGifs:YES];
-            [self loadMoreGifs];
-        }
-    }
+//    if([view isKindOfClass:[GSOnboardingWelcomeView class]]) {
+//            self.backCardView.alpha = 0.f;
+//            [self.view insertSubview:self.backCardView belowSubview:self.frontCardView];
+//            [UIView animateWithDuration:0.5
+//                                  delay:0.0
+//                                options:UIViewAnimationOptionCurveEaseInOut
+//                             animations:^{
+//                                 self.backCardView.alpha = 1.f;
+//                             } completion:nil];
+//
+//    } else {
     
-    NSFileManager *manager = [NSFileManager defaultManager];
-    NSURL *gifURL = [NSURL URLWithString:self.currentGifView.gif.gifLink];
-    NSString *gifFileName = [gifURL lastPathComponent];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
+        [self setNullStateLoading];
 
-    NSString *fromGifFinalPath = [documentsDirectory stringByAppendingPathComponent:gifFileName];
-    NSString *toGifFolderPath = [documentsDirectory stringByAppendingPathComponent:@"liked_gifs"];
-    NSString *toGifFinalPath = [toGifFolderPath stringByAppendingPathComponent:gifFileName];
-    
-    if (direction == MDCSwipeDirectionRight) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            NSError *error;
-            BOOL isDirectory;
-            if(![manager fileExistsAtPath:toGifFolderPath isDirectory:&isDirectory]){
-                if(!isDirectory)
-                    [manager createDirectoryAtPath:toGifFolderPath withIntermediateDirectories:NO attributes:nil error:&error];
+        if([GSGifManager sharedInstance].gifs.count >= 10) {
+            [[GSGifManager sharedInstance] setLoadGifs:NO];
+            currentlyAddingGifs = NO;
+        } else if ([GSGifManager sharedInstance].gifs.count < 5){
+            NSLog(@"Need to load more gifs, gif count is %lu, currentladding: %d",(unsigned long)[GSGifManager sharedInstance].gifs.count, currentlyAddingGifs);
+            if(!currentlyAddingGifs){
+                [[GSGifManager sharedInstance] setLoadGifs:YES];
+                [self loadMoreGifs];
             }
-            
-            if(![manager fileExistsAtPath:toGifFinalPath] && [manager fileExistsAtPath:fromGifFinalPath]) {
-                [[GSGifManager sharedInstance].likedGifs addObject:self.currentGifView.gif];
-                [manager moveItemAtPath:fromGifFinalPath toPath:toGifFinalPath error:&error];
-                if(error) {
-                   // NSLog(@"Error in moving liked gif %@", error.description);
-                } else {
-                   // NSLog(@"Moved liked gif %@ to %@", gifFileName, toGifFinalPath);
-                }
-            }
-
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [[GSGifManager sharedInstance].likedGifs mutableCopy]];
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [defaults setObject:data forKey:@"likedGifs"];
-            [defaults synchronize];
-        });
-    } else {
-
-        NSString *gifFileLocation = [documentsDirectory stringByAppendingPathComponent:gifFileName];
-        NSError *error;
-        BOOL success = [manager removeItemAtPath:gifFileLocation error:&error];
-        if (success) {
-          //  NSLog(@"removed noped gif, %@", self.currentGifView.gif.caption);
-        } else {
-          //   NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
-        }
-    }
-    
-    if(!self.backGifView) {
-        self.currentGifView = nil;
-        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
-        [self.navigationItem.leftBarButtonItem setEnabled:NO];
-    }
-    if(self.currentGifView) {
-        [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
-        NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [GSGifManager sharedInstance].displayedGifIDs];
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setObject:data forKey:@"displayedGifIDs"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        //  NSLog(@"Saved displayedGifIDs in userdefaults: %@", [GSGifManager sharedInstance].displayedGifIDs);
-    }
-    
-    self.frontGifView = self.backGifView;
-    
-    if([[GSGifManager sharedInstance].gifs count] > 2){
-        if(!self.frontGifView) {
-            self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
-            self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //Update UI on main thread
-                self.frontGifView.alpha = 0;
-                self.backGifView.alpha = 0;
-                [self.view addSubview:self.frontGifView];
-                [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
-                
-                [UIView animateWithDuration:0.3f animations:^{
-                    self.frontGifView.alpha = 1;
-                    self.backGifView.alpha = 1;
-                }];
-                [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
-                [self.navigationItem.leftBarButtonItem setEnabled:YES];
-            });
-        } else {
-            self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
-            self.backGifView.frame = [self backGifViewFrame];
-            self.backGifView.alpha = 0.f;
-            [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
-            [UIView animateWithDuration:0.5
-                                  delay:0.0
-                                options:UIViewAnimationOptionCurveEaseInOut
-                             animations:^{
-                                 self.backGifView.alpha = 1.f;
-                             } completion:nil];
         }
         
-    } else {
-        self.backGifView = nil;
-    }
-    
-    NSLog(@"number of gifs: %lu", (unsigned long)[[GSGifManager sharedInstance].gifs count]);
-    
-    
+        GSGif *gifToMove = self.currentGifView.gif;
+
+        NSFileManager *manager = [NSFileManager defaultManager];
+        NSURL *gifURL = [NSURL URLWithString:gifToMove.gifLink];
+        NSString *gifFileName = [gifURL lastPathComponent];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+
+        NSString *fromGifFinalPath = [documentsDirectory stringByAppendingPathComponent:gifFileName];
+        NSString *toGifFolderPath = [documentsDirectory stringByAppendingPathComponent:@"liked_gifs"];
+        NSString *toGifFinalPath = [toGifFolderPath stringByAppendingPathComponent:gifFileName];
+        
+        if (direction == MDCSwipeDirectionRight) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                NSError *error;
+                BOOL isDirectory;
+                if(![manager fileExistsAtPath:toGifFolderPath isDirectory:&isDirectory]){
+                    if(!isDirectory)
+                        [manager createDirectoryAtPath:toGifFolderPath withIntermediateDirectories:NO attributes:nil error:&error];
+                }
+                
+                if(![manager fileExistsAtPath:toGifFinalPath] && [manager fileExistsAtPath:fromGifFinalPath]) {
+                    [[GSGifManager sharedInstance].likedGifs addObject:gifToMove];
+                    [manager moveItemAtPath:fromGifFinalPath toPath:toGifFinalPath error:&error];
+                    if(error) {
+                       // NSLog(@"Error in moving liked gif %@", error.description);
+                    } else {
+                        NSLog(@"Moved liked gif %@ to %@", gifFileName, toGifFinalPath);
+                    }
+                }
+
+                NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [[GSGifManager sharedInstance].likedGifs mutableCopy]];
+                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                [defaults setObject:data forKey:@"likedGifs"];
+                [defaults synchronize];
+            });
+        } else {
+
+            NSString *gifFileLocation = [documentsDirectory stringByAppendingPathComponent:gifFileName];
+            NSError *error;
+            BOOL success = [manager removeItemAtPath:gifFileLocation error:&error];
+            if (success) {
+              //  NSLog(@"removed noped gif, %@", self.currentGifView.gif.caption);
+            } else {
+              //   NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
+            }
+        }
+        
+        if(!self.backGifView) {
+            self.currentGifView = nil;
+            [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
+            [self.navigationItem.leftBarButtonItem setEnabled:NO];
+        }
+        if(self.currentGifView) {
+            [[GSGifManager sharedInstance].displayedGifIDs addObject:self.currentGifView.gif.gifID];
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject: [GSGifManager sharedInstance].displayedGifIDs];
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:data forKey:@"displayedGifIDs"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            //  NSLog(@"Saved displayedGifIDs in userdefaults: %@", [GSGifManager sharedInstance].displayedGifIDs);
+        }
+        
+        self.frontGifView = self.backGifView;
+        
+        if([[GSGifManager sharedInstance].gifs count] > 2){
+            if(!self.frontGifView) {
+                self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
+                self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    //Update UI on main thread
+                    self.frontGifView.alpha = 0;
+                    self.backGifView.alpha = 0;
+                    [self.view addSubview:self.frontGifView];
+                    [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                    
+                    [UIView animateWithDuration:0.3f animations:^{
+                        self.frontGifView.alpha = 1;
+                        self.backGifView.alpha = 1;
+                    }];
+                    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+                    [self.navigationItem.leftBarButtonItem setEnabled:YES];
+                });
+            } else {
+                self.backGifView = [self popGifViewWithFrame:[self backGifViewFrame]];
+                self.backGifView.frame = [self backGifViewFrame];
+                self.backGifView.alpha = 0.f;
+                [self.view insertSubview:self.backGifView belowSubview:self.frontGifView];
+                [UIView animateWithDuration:0.5
+                                      delay:0.0
+                                    options:UIViewAnimationOptionCurveEaseInOut
+                                 animations:^{
+                                     self.backGifView.alpha = 1.f;
+                                 } completion:nil];
+            }
+            
+        } else {
+            self.backGifView = nil;
+        }
+        
+        NSLog(@"number of gifs: %lu", (unsigned long)[[GSGifManager sharedInstance].gifs count]);
+ //   }
 }
 
 
@@ -355,6 +393,24 @@
     return gifView;
 }
 
+- (GSOnboardingWelcomeView *)popOnboardingWelcomeViewWithFrame:(CGRect)frame {
+    MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
+    options.delegate = self;
+    options.threshold = 160.f;
+    
+    GSOnboardingWelcomeView *welcomeOnboardingView = [[GSOnboardingWelcomeView alloc] initWithFrame:frame options:options];
+    return welcomeOnboardingView;
+}
+
+- (GSOnboardingInstructionsView *)popOnboardingInstructionsViewWithFrame:(CGRect)frame {
+    MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
+    options.delegate = self;
+    options.threshold = 160.f;
+
+    GSOnboardingInstructionsView *instructionsOnboardingView = [[GSOnboardingInstructionsView alloc] initWithFrame:frame options:options];
+    return instructionsOnboardingView;
+}
+                       
 - (CGRect)frontGifViewFrame {
     CGFloat horizontalPadding = 20.f;
     CGFloat topPadding = 90.f;
@@ -445,7 +501,7 @@
             [alert show];
         } else if(myStatus == ReachableViaWiFi) {
             dispatch_async(dispatch_get_main_queue(), ^{
-            [self setupNullState];
+                [self setupNullState];
             });
             [self setupMainView];
         }
@@ -455,22 +511,19 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if(alertView.cancelButtonIndex == buttonIndex){
         dispatch_async(dispatch_get_main_queue(), ^{
-
-        [self setupNullState];
-        [self setupMainView];
+            [self setupNullState];
+            [self setupMainView];
         });
     }
     if (buttonIndex == 1){
         dispatch_async(dispatch_get_main_queue(), ^{
-
-        [self setupNullState];
-        [self setNullStateNoConnection];
+            [self setupNullState];
+            [self setNullStateNoConnection];
         });
     }
 }
 
-- (void)shareText:(NSString *)text andImage:(UIImage *)image andUrl:(NSURL *)url
-{
+- (void)shareText:(NSString *)text andImage:(UIImage *)image andUrl:(NSURL *)url {
     NSMutableArray *sharingItems = [NSMutableArray new];
     
     if (text) {

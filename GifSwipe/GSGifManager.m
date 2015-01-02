@@ -86,7 +86,7 @@
                                 [self.gifs addObject:gif];
                                 [gifsIncludingNonGifs addObject:gif];
                                 [self.addedGifIDs addObject:gif.gifID];
-                                NSLog(@"added gif %@ data with: %@",gif.gifID, gifFileLocation);
+                                NSLog(@"added gif %@ data with: %@",gif.caption, gifFileLocation);
                             }
                             if(new) {
                                 if(i == posts.count-1) {

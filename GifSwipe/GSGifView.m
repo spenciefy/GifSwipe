@@ -173,5 +173,4 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
     [self mdc_swipeToChooseSetup:options];
 }
 
-
 @end

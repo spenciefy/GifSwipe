@@ -27,7 +27,9 @@
 		6C886B8A1A52090B00088119 /* MDCGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B891A52090B00088119 /* MDCGeometry.m */; };
 		6C886B8C1A56076E00088119 /* nullstate.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B8B1A56076E00088119 /* nullstate.gif */; };
 		6CC149E91A56319F00FDF5AA /* GSGifCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CC149E71A56319F00FDF5AA /* GSGifCollectionViewCell.m */; };
-		6CC149EA1A56319F00FDF5AA /* GSGifCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6CC149E81A56319F00FDF5AA /* GSGifCollectionViewCell.xib */; };
+		6CC149ED1A5693EC00FDF5AA /* GSOnboardingWelcomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CC149EC1A5693EC00FDF5AA /* GSOnboardingWelcomeView.m */; };
+		6CC149F01A56940900FDF5AA /* GSOnboardingInstructionsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CC149EF1A56940900FDF5AA /* GSOnboardingInstructionsView.m */; };
+		6CC149F21A5699C200FDF5AA /* heythere.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6CC149F11A5699C200FDF5AA /* heythere.gif */; };
 		B258CB511A51FD79007BA230 /* GSLikedGifsCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */; };
 		B258CB631A5347EF007BA230 /* GSPopOutView.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB621A5347EF007BA230 /* GSPopOutView.m */; };
 /* End PBXBuildFile section */
@@ -76,7 +78,11 @@
 		6C886B8B1A56076E00088119 /* nullstate.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = nullstate.gif; sourceTree = "<group>"; };
 		6CC149E61A56319F00FDF5AA /* GSGifCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSGifCollectionViewCell.h; sourceTree = "<group>"; };
 		6CC149E71A56319F00FDF5AA /* GSGifCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSGifCollectionViewCell.m; sourceTree = "<group>"; };
-		6CC149E81A56319F00FDF5AA /* GSGifCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GSGifCollectionViewCell.xib; sourceTree = "<group>"; };
+		6CC149EB1A5693EC00FDF5AA /* GSOnboardingWelcomeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSOnboardingWelcomeView.h; sourceTree = "<group>"; };
+		6CC149EC1A5693EC00FDF5AA /* GSOnboardingWelcomeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSOnboardingWelcomeView.m; sourceTree = "<group>"; };
+		6CC149EE1A56940900FDF5AA /* GSOnboardingInstructionsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSOnboardingInstructionsView.h; sourceTree = "<group>"; };
+		6CC149EF1A56940900FDF5AA /* GSOnboardingInstructionsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSOnboardingInstructionsView.m; sourceTree = "<group>"; };
+		6CC149F11A5699C200FDF5AA /* heythere.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = heythere.gif; sourceTree = "<group>"; };
 		B258CB4F1A51FD79007BA230 /* GSLikedGifsCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSLikedGifsCollectionViewController.h; sourceTree = "<group>"; };
 		B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSLikedGifsCollectionViewController.m; sourceTree = "<group>"; };
 		B258CB611A5347EF007BA230 /* GSPopOutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSPopOutView.h; sourceTree = "<group>"; };
@@ -135,6 +141,7 @@
 				6C886B781A515D1900088119 /* searching.gif */,
 				6C886B8B1A56076E00088119 /* nullstate.gif */,
 				6C886B801A51F2D000088119 /* heart65@2x.png */,
+				6CC149F11A5699C200FDF5AA /* heythere.gif */,
 				6C886B711A510AB500088119 /* Controllers */,
 				6C886B701A510AB000088119 /* Views */,
 				6C886B6F1A510AAB00088119 /* Models */,
@@ -194,13 +201,16 @@
 		6C886B701A510AB000088119 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				6CC149E81A56319F00FDF5AA /* GSGifCollectionViewCell.xib */,
 				6CC149E61A56319F00FDF5AA /* GSGifCollectionViewCell.h */,
 				6CC149E71A56319F00FDF5AA /* GSGifCollectionViewCell.m */,
 				6C886B631A510A4100088119 /* GSGifView.h */,
 				6C886B641A510A4100088119 /* GSGifView.m */,
 				B258CB611A5347EF007BA230 /* GSPopOutView.h */,
 				B258CB621A5347EF007BA230 /* GSPopOutView.m */,
+				6CC149EB1A5693EC00FDF5AA /* GSOnboardingWelcomeView.h */,
+				6CC149EC1A5693EC00FDF5AA /* GSOnboardingWelcomeView.m */,
+				6CC149EE1A56940900FDF5AA /* GSOnboardingInstructionsView.h */,
+				6CC149EF1A56940900FDF5AA /* GSOnboardingInstructionsView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -333,10 +343,10 @@
 				6C886B8C1A56076E00088119 /* nullstate.gif in Resources */,
 				6C886B451A510A1800088119 /* Main.storyboard in Resources */,
 				6C886B791A515D1900088119 /* searching.gif in Resources */,
-				6CC149EA1A56319F00FDF5AA /* GSGifCollectionViewCell.xib in Resources */,
 				6C886B4A1A510A1800088119 /* LaunchScreen.xib in Resources */,
 				6C886B471A510A1800088119 /* Images.xcassets in Resources */,
 				6C886B741A511BDE00088119 /* sad.gif in Resources */,
+				6CC149F21A5699C200FDF5AA /* heythere.gif in Resources */,
 				6C886B811A51F2D000088119 /* heart65@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -394,6 +404,7 @@
 				6C886B871A5208AC00088119 /* UIView+MDCBorderedLabel.m in Sources */,
 				6C886B6A1A510A4100088119 /* GSGifManager.m in Sources */,
 				6C886B691A510A4100088119 /* GSGif.m in Sources */,
+				6CC149ED1A5693EC00FDF5AA /* GSOnboardingWelcomeView.m in Sources */,
 				B258CB631A5347EF007BA230 /* GSPopOutView.m in Sources */,
 				B258CB511A51FD79007BA230 /* GSLikedGifsCollectionViewController.m in Sources */,
 				6C886B3F1A510A1800088119 /* AppDelegate.m in Sources */,
@@ -401,6 +412,7 @@
 				6C886B8A1A52090B00088119 /* MDCGeometry.m in Sources */,
 				6C886B3C1A510A1800088119 /* main.m in Sources */,
 				6C886B6D1A510A4100088119 /* UIImage+animatedGIF.m in Sources */,
+				6CC149F01A56940900FDF5AA /* GSOnboardingInstructionsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -524,6 +536,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = GifSwipe/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -535,6 +548,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = GifSwipe/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
