@@ -18,13 +18,6 @@
         self.layer.borderWidth = 2.f;
         self.layer.borderColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1].CGColor;
         
-        self.deleteLabel = [[UILabel alloc] initWithFrame:self.frame];
-        self.deleteLabel.font = [UIFont fontWithName:@"AvenirNext-UltraLight" size:70];
-        self.deleteLabel.text = @"x";
-        self.deleteLabel.backgroundColor = [UIColor colorWithRed:255/255.0 green:45/255.0 blue:15/255.0 alpha:0.45];
-        self.deleteLabel.alpha = 0;
-        [self addSubview:self.deleteLabel];
-        
         self.backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         self.backgroundImage.contentMode = UIViewContentModeScaleToFill;
         self.backgroundImage.clipsToBounds = YES;
@@ -35,6 +28,18 @@
         self.gifImageView.clipsToBounds = YES;
         self.gifImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview:self.gifImageView];
+        
+        self.deleteLabel = [[UILabel alloc] init];
+        self.deleteLabel.frame = self.frame;
+        self.deleteLabel.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
+        self.deleteLabel.font = [UIFont fontWithName:@"AvenirNext-UltraLight" size:70];
+        self.deleteLabel.text = @"x";
+        self.deleteLabel.textAlignment = NSTextAlignmentCenter;
+        self.deleteLabel.textColor = [UIColor whiteColor];
+        self.deleteLabel.backgroundColor = [UIColor colorWithRed:255/255.0 green:45/255.0 blue:15/255.0 alpha:0.45];
+        self.deleteLabel.alpha = 0;
+        [self addSubview: self.deleteLabel];
+
     }
     return self;
 }

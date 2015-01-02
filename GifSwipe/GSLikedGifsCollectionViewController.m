@@ -125,16 +125,16 @@
     if(flGifImages.count > 0){
         cell.gifImage = [flGifImages objectAtIndex:indexPath.row];
     }
+    
     if (isDeleteActive) {
-        if(cell.deleteLabel.alpha == 0.0)
-            [UIView animateWithDuration: 0.3 animations: ^ {
-                cell.deleteLabel.alpha = 1.0;
-            }];
+        NSLog(@"cfhtbjkbghuj");
+        [UIView animateWithDuration: 0.3 animations: ^ {
+            cell.deleteLabel.alpha = 1.0;
+        }];
     } else {
-        if(cell.deleteLabel.alpha == 1.0)
-            [UIView animateWithDuration: 0.3 animations: ^ {
-                cell.deleteLabel.alpha = 0.0;
-            }];
+        [UIView animateWithDuration: 0.3 animations: ^ {
+            cell.deleteLabel.alpha = 0.0;
+        }];
     }
     
     return cell;
