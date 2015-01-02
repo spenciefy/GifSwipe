@@ -26,6 +26,8 @@
 		6C886B871A5208AC00088119 /* UIView+MDCBorderedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B861A5208AC00088119 /* UIView+MDCBorderedLabel.m */; };
 		6C886B8A1A52090B00088119 /* MDCGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B891A52090B00088119 /* MDCGeometry.m */; };
 		6C886B8C1A56076E00088119 /* nullstate.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B8B1A56076E00088119 /* nullstate.gif */; };
+		6CC149E91A56319F00FDF5AA /* GSGifCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CC149E71A56319F00FDF5AA /* GSGifCollectionViewCell.m */; };
+		6CC149EA1A56319F00FDF5AA /* GSGifCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6CC149E81A56319F00FDF5AA /* GSGifCollectionViewCell.xib */; };
 		B258CB511A51FD79007BA230 /* GSLikedGifsCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */; };
 		B258CB631A5347EF007BA230 /* GSPopOutView.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB621A5347EF007BA230 /* GSPopOutView.m */; };
 /* End PBXBuildFile section */
@@ -72,6 +74,9 @@
 		6C886B881A52090B00088119 /* MDCGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDCGeometry.h; sourceTree = "<group>"; };
 		6C886B891A52090B00088119 /* MDCGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCGeometry.m; sourceTree = "<group>"; };
 		6C886B8B1A56076E00088119 /* nullstate.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = nullstate.gif; sourceTree = "<group>"; };
+		6CC149E61A56319F00FDF5AA /* GSGifCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSGifCollectionViewCell.h; sourceTree = "<group>"; };
+		6CC149E71A56319F00FDF5AA /* GSGifCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSGifCollectionViewCell.m; sourceTree = "<group>"; };
+		6CC149E81A56319F00FDF5AA /* GSGifCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GSGifCollectionViewCell.xib; sourceTree = "<group>"; };
 		B258CB4F1A51FD79007BA230 /* GSLikedGifsCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSLikedGifsCollectionViewController.h; sourceTree = "<group>"; };
 		B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSLikedGifsCollectionViewController.m; sourceTree = "<group>"; };
 		B258CB611A5347EF007BA230 /* GSPopOutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSPopOutView.h; sourceTree = "<group>"; };
@@ -189,6 +194,9 @@
 		6C886B701A510AB000088119 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				6CC149E81A56319F00FDF5AA /* GSGifCollectionViewCell.xib */,
+				6CC149E61A56319F00FDF5AA /* GSGifCollectionViewCell.h */,
+				6CC149E71A56319F00FDF5AA /* GSGifCollectionViewCell.m */,
 				6C886B631A510A4100088119 /* GSGifView.h */,
 				6C886B641A510A4100088119 /* GSGifView.m */,
 				B258CB611A5347EF007BA230 /* GSPopOutView.h */,
@@ -325,6 +333,7 @@
 				6C886B8C1A56076E00088119 /* nullstate.gif in Resources */,
 				6C886B451A510A1800088119 /* Main.storyboard in Resources */,
 				6C886B791A515D1900088119 /* searching.gif in Resources */,
+				6CC149EA1A56319F00FDF5AA /* GSGifCollectionViewCell.xib in Resources */,
 				6C886B4A1A510A1800088119 /* LaunchScreen.xib in Resources */,
 				6C886B471A510A1800088119 /* Images.xcassets in Resources */,
 				6C886B741A511BDE00088119 /* sad.gif in Resources */,
@@ -388,6 +397,7 @@
 				B258CB631A5347EF007BA230 /* GSPopOutView.m in Sources */,
 				B258CB511A51FD79007BA230 /* GSLikedGifsCollectionViewController.m in Sources */,
 				6C886B3F1A510A1800088119 /* AppDelegate.m in Sources */,
+				6CC149E91A56319F00FDF5AA /* GSGifCollectionViewCell.m in Sources */,
 				6C886B8A1A52090B00088119 /* MDCGeometry.m in Sources */,
 				6C886B3C1A510A1800088119 /* main.m in Sources */,
 				6C886B6D1A510A4100088119 /* UIImage+animatedGIF.m in Sources */,

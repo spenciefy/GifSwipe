@@ -11,6 +11,7 @@
 #import "GSGifView.h"
 #import "GSPopOutView.h"
 #import "GSGifManager.h"
+#import "GSGifCollectionViewCell.h"
 
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
@@ -110,27 +111,13 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     
     static NSString *identifier = @"GifCell";
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
-    
     GSGif *gif = [likedGifs objectAtIndex: indexPath.row];
+
+    GSGifCollectionViewCell *cell = [[GSGifCollectionViewCell alloc] initWithAnimatedImage:[flGifImages objectAtIndex:indexPath.row] gif:gif];
+    
     UIImageView *backgroundImage = (UIImageView *)[cell viewWithTag: 1];
     backgroundImage.image = gif.blurredBackroundImage;
-    
-    if(flGifImages.count > 0){
-        FLAnimatedImage *gifImage = [flGifImages objectAtIndex:indexPath.row];
-        FLAnimatedImageView *gifImageView = [[FLAnimatedImageView alloc] initWithFrame: CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.width)];
-        
-        gifImageView.center = CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMidY(cell.bounds));
-        gifImageView.clipsToBounds = YES;
-        gifImageView.contentMode = UIViewContentModeScaleAspectFit;
-        gifImageView.animatedImage = gifImage;
-        [cell addSubview: gifImageView];
-    }
-    cell.backgroundColor = [UIColor whiteColor];
-    cell.layer.cornerRadius = 5.f;
-    cell.layer.masksToBounds = YES;
-    cell.layer.borderWidth = 2.f;
-    cell.layer.borderColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1].CGColor;
+
     
     UILabel *delete = (UILabel *)[cell viewWithTag: 2];
     if (isDeleteActive) {
