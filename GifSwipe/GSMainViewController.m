@@ -20,7 +20,6 @@
 @end
 
 @implementation GSMainViewController {
-    BOOL isFirstLaunch;
     BOOL currentlyAddingGifs;
     UILabel *nullStateLabel;
     FLAnimatedImageView *nullStateImageView;
@@ -39,13 +38,11 @@
 
 - (void)setupMainView {
 #warning temp commented out to test
-  //  if (![[NSUserDefaults standardUserDefaults] boolForKey:@"HasLaunchedOnce"]){
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasLaunchedOnce"]){
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasLaunchedOnce"];
         [[NSUserDefaults standardUserDefaults] synchronize];
-        isFirstLaunch = YES;
         //Load front and back views
         self.welcomeGifView = [self popOnboardingWelcomeViewWithFrame:[self frontGifViewFrame]];
-#warning this needs to be updated once instructions view is added
         self.instructionsGifView = [self popOnboardingInstructionsViewWithFrame:[self backGifViewFrame]];
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -60,9 +57,7 @@
                 self.instructionsGifView.alpha = 1;
             }];
         });
- //   } else {
-  //      isFirstLaunch = NO;
- //   }
+    }
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSData *data = [defaults objectForKey:@"displayedGifIDs"];
@@ -170,17 +165,7 @@
 }
 
 - (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {
-//    if([view isKindOfClass:[GSOnboardingWelcomeView class]]) {
-//            self.backCardView.alpha = 0.f;
-//            [self.view insertSubview:self.backCardView belowSubview:self.frontCardView];
-//            [UIView animateWithDuration:0.5
-//                                  delay:0.0
-//                                options:UIViewAnimationOptionCurveEaseInOut
-//                             animations:^{
-//                                 self.backCardView.alpha = 1.f;
-//                             } completion:nil];
-//
-//    } else {
+    if([view isKindOfClass:[GSGifView class]]) {
     
         [self setNullStateLoading];
 
@@ -296,7 +281,7 @@
         }
         
         NSLog(@"number of gifs: %lu", (unsigned long)[[GSGifManager sharedInstance].gifs count]);
- //   }
+    }
 }
 
 

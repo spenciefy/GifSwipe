@@ -13,12 +13,14 @@
 
 @interface GSOnboardingInstructionsView : UIView
 
+@property (nonatomic, strong) IBOutlet UIView *mainView;
+
 @property (nonatomic, strong) IBOutlet UILabel *titleLabel;
 @property (nonatomic, strong) IBOutlet UILabel *swipeRightLabel;
 @property (nonatomic, strong) IBOutlet UILabel *swipeLeftLabel;
 @property (nonatomic, strong) IBOutlet UILabel *shareLabel;
 @property (nonatomic, strong) IBOutlet UILabel *likedLabel;
-@property (nonatomic, strong) IBOutlet UIImageView *shareImageVidw;
+@property (nonatomic, strong) IBOutlet UIImageView *shareImageView;
 @property (nonatomic, strong) IBOutlet UIImageView *likedImageView;
 @property (nonatomic, strong) IBOutlet UILabel *bottomInstructionsLabel;
 

@@ -7,6 +7,17 @@
 //
 
 #import "GSOnboardingWelcomeView.h"
+#define IS_IPHONE_4_OR_LESS (IS_IPHONE && SCREEN_MAX_LENGTH < 568.0)
+#define IS_IPHONE_5 (IS_IPHONE && SCREEN_MAX_LENGTH == 568.0)
+#define IS_IPHONE_6 (IS_IPHONE && SCREEN_MAX_LENGTH == 667.0)
+#define IS_IPHONE_6P (IS_IPHONE && SCREEN_MAX_LENGTH == 736.0)
+#define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_RETINA ([[UIScreen mainScreen] scale] >= 2.0)
+#define SCREEN_WIDTH ([[UIScreen mainScreen] bounds].size.width)
+#define SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
+#define SCREEN_MAX_LENGTH (MAX(SCREEN_WIDTH, SCREEN_HEIGHT))
+#define SCREEN_MIN_LENGTH (MIN(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 @interface GSOnboardingWelcomeView ()
 
@@ -21,7 +32,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         _options = options ? options : [MDCSwipeToChooseViewOptions new];
-        self.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor = [UIColor colorWithRed:245/255.0 green:245/255.0 blue:245/255.0 alpha:1];
         self.layer.cornerRadius = 5.f;
         self.layer.masksToBounds = YES;
         self.layer.borderWidth = 2.f;
@@ -48,6 +59,11 @@
     _gifImageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width/1.2, (self.frame.size.width/1.2)/1.81)];
     _gifImageView.center = CGPointMake(self.frame.size.width/2, (self.frame.size.height/2) - 50);
     _gifImageView.animatedImage = gifImage;
+    if(IS_IPHONE_4_OR_LESS) {
+        _titleLabel.center = CGPointMake(self.frame.size.width/2, 40);
+        _gifImageView.center = CGPointMake(self.frame.size.width/2, (self.frame.size.height/2) - 40);
+
+    }
     [self addSubview:_gifImageView];
     
     _captionLabel= [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 100)];

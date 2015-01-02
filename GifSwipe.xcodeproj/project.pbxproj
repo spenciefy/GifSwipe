@@ -30,6 +30,8 @@
 		6CC149ED1A5693EC00FDF5AA /* GSOnboardingWelcomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CC149EC1A5693EC00FDF5AA /* GSOnboardingWelcomeView.m */; };
 		6CC149F01A56940900FDF5AA /* GSOnboardingInstructionsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CC149EF1A56940900FDF5AA /* GSOnboardingInstructionsView.m */; };
 		6CC149F21A5699C200FDF5AA /* heythere.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6CC149F11A5699C200FDF5AA /* heythere.gif */; };
+		6CC149F51A572F8F00FDF5AA /* liked.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CC149F31A572F8F00FDF5AA /* liked.png */; };
+		6CC149F61A572F8F00FDF5AA /* share.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CC149F41A572F8F00FDF5AA /* share.png */; };
 		B258CB511A51FD79007BA230 /* GSLikedGifsCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */; };
 		B258CB631A5347EF007BA230 /* GSPopOutView.m in Sources */ = {isa = PBXBuildFile; fileRef = B258CB621A5347EF007BA230 /* GSPopOutView.m */; };
 /* End PBXBuildFile section */
@@ -83,6 +85,8 @@
 		6CC149EE1A56940900FDF5AA /* GSOnboardingInstructionsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSOnboardingInstructionsView.h; sourceTree = "<group>"; };
 		6CC149EF1A56940900FDF5AA /* GSOnboardingInstructionsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSOnboardingInstructionsView.m; sourceTree = "<group>"; };
 		6CC149F11A5699C200FDF5AA /* heythere.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = heythere.gif; sourceTree = "<group>"; };
+		6CC149F31A572F8F00FDF5AA /* liked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = liked.png; sourceTree = "<group>"; };
+		6CC149F41A572F8F00FDF5AA /* share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = share.png; sourceTree = "<group>"; };
 		B258CB4F1A51FD79007BA230 /* GSLikedGifsCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSLikedGifsCollectionViewController.h; sourceTree = "<group>"; };
 		B258CB501A51FD79007BA230 /* GSLikedGifsCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSLikedGifsCollectionViewController.m; sourceTree = "<group>"; };
 		B258CB611A5347EF007BA230 /* GSPopOutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSPopOutView.h; sourceTree = "<group>"; };
@@ -142,6 +146,8 @@
 				6C886B8B1A56076E00088119 /* nullstate.gif */,
 				6C886B801A51F2D000088119 /* heart65@2x.png */,
 				6CC149F11A5699C200FDF5AA /* heythere.gif */,
+				6CC149F31A572F8F00FDF5AA /* liked.png */,
+				6CC149F41A572F8F00FDF5AA /* share.png */,
 				6C886B711A510AB500088119 /* Controllers */,
 				6C886B701A510AB000088119 /* Views */,
 				6C886B6F1A510AAB00088119 /* Models */,
@@ -342,10 +348,12 @@
 			files = (
 				6C886B8C1A56076E00088119 /* nullstate.gif in Resources */,
 				6C886B451A510A1800088119 /* Main.storyboard in Resources */,
+				6CC149F51A572F8F00FDF5AA /* liked.png in Resources */,
 				6C886B791A515D1900088119 /* searching.gif in Resources */,
 				6C886B4A1A510A1800088119 /* LaunchScreen.xib in Resources */,
 				6C886B471A510A1800088119 /* Images.xcassets in Resources */,
 				6C886B741A511BDE00088119 /* sad.gif in Resources */,
+				6CC149F61A572F8F00FDF5AA /* share.png in Resources */,
 				6CC149F21A5699C200FDF5AA /* heythere.gif in Resources */,
 				6C886B811A51F2D000088119 /* heart65@2x.png in Resources */,
 			);
