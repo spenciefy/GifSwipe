@@ -45,6 +45,7 @@
         isFirstLaunch = YES;
         //Load front and back views
         self.welcomeGifView = [self popOnboardingWelcomeViewWithFrame:[self frontGifViewFrame]];
+#warning this needs to be updated once instructions view is added
         self.instructionsGifView = [self popOnboardingInstructionsViewWithFrame:[self backGifViewFrame]];
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -397,7 +398,13 @@
     MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
     options.delegate = self;
     options.threshold = 160.f;
-    
+    options.onPan = ^(MDCPanState *state){
+        CGRect frame = [self backGifViewFrame];
+        self.instructionsGifView.frame = CGRectMake(frame.origin.x,
+                                            frame.origin.y - (state.thresholdRatio * 10.f),
+                                            CGRectGetWidth(frame),
+                                            CGRectGetHeight(frame));
+    };
     GSOnboardingWelcomeView *welcomeOnboardingView = [[GSOnboardingWelcomeView alloc] initWithFrame:frame options:options];
     return welcomeOnboardingView;
 }
