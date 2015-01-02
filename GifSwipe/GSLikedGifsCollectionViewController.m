@@ -142,7 +142,7 @@
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
     double padding;
-    if (IS_IPHONE_5) {
+    if (IS_IPHONE_5 || IS_IPHONE_4_OR_LESS) {
         padding = 10;
     } else if (IS_IPHONE_6) {
         padding = self.view.frame.size.width/14;
