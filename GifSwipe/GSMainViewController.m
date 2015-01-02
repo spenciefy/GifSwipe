@@ -20,6 +20,7 @@
 @end
 
 @implementation GSMainViewController {
+    BOOL isFirstLaunch;
     BOOL currentlyAddingGifs;
     UILabel *nullStateLabel;
     FLAnimatedImageView *nullStateImageView;
@@ -27,7 +28,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    isFirstLaunch = NO;
     currentlyAddingGifs = NO;
     
     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor clearColor]];
@@ -37,8 +38,8 @@
 }
 
 - (void)setupMainView {
-#warning temp commented out to test
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasLaunchedOnce"]){
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"HasLaunchedOnce"]){
+        isFirstLaunch = YES;
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasLaunchedOnce"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         //Load front and back views
@@ -129,9 +130,7 @@
     [super viewDidAppear:animated];
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        
         [self hasNetwork];
-        
         [self becomeFirstResponder];
     });
 }
@@ -165,10 +164,10 @@
 }
 
 - (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {
+    [self setNullStateLoading];
+
     if([view isKindOfClass:[GSGifView class]]) {
     
-        [self setNullStateLoading];
-
         if([GSGifManager sharedInstance].gifs.count >= 10) {
             [[GSGifManager sharedInstance] setLoadGifs:NO];
             currentlyAddingGifs = NO;
@@ -442,6 +441,11 @@
     nullStateLabel.textAlignment = NSTextAlignmentCenter;
     nullStateLabel.text = @"Finding a batch of Gifs for you :)";
     
+    if(isFirstLaunch) {
+        nullStateImageView.alpha = 0;
+        nullStateLabel.alpha = 0;
+    }
+    
     [self.view addSubview:nullStateLabel];
     [self.view sendSubviewToBack:nullStateImageView];
     [self.view sendSubviewToBack:nullStateLabel];
@@ -449,6 +453,8 @@
 
 - (void)setNullStateLoading {
     dispatch_async(dispatch_get_main_queue(), ^{
+        nullStateImageView.alpha = 1;
+        nullStateLabel.alpha = 1;
         NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
         NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
         
@@ -465,6 +471,8 @@
 
 - (void)setNullStateNoConnection {
     dispatch_async(dispatch_get_main_queue(), ^{
+        nullStateImageView.alpha = 1;
+        nullStateLabel.alpha = 1;
         nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 199, 142);
         nullStateLabel.text = @"You're not connected to the internet :(";
         NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
