@@ -621,7 +621,7 @@
                 nullStateImageView.animatedImage = gifImage;
                 break;}
             case 3: {
-                nullStateLabel.text = @"You are using a Tinder for gifs app. Think about that for a second.";
+                nullStateLabel.text = @"You are using a Tinder for gifs app. Perhaps you should reconsider your life.";
                 nullStateLabel.frame =  CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700);
                 nullStateLabel.adjustsFontSizeToFitWidth = YES;
                 [nullStateLabel sizeToFit];
