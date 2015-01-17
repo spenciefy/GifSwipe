@@ -507,6 +507,11 @@
         nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
         nullStateLabel.adjustsFontSizeToFitWidth = YES;
         [nullStateLabel sizeToFit];
+        
+        UIBarButtonItem *refreshBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshNetworkAction:)];
+        self.navigationItem.leftBarButtonItem = refreshBarButtonItem;
+        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
     });
 }
 
@@ -516,7 +521,6 @@
     
     if(myStatus == NotReachable) {
         dispatch_async(dispatch_get_main_queue(), ^{
-
         [self setupNullState];
         [self setNullStateNoConnection];
         });
@@ -574,6 +578,24 @@
         NSString *shareString = [NSString stringWithFormat:@"Check out this Gif I found via GifSwipe!\r\r%@\r",self.currentGifView.gif.caption];
         [self shareText:shareString andImage:nil andUrl:[NSURL URLWithString:self.currentGifView.gif.gifLink]];
     });
+}
+
+- (IBAction)refreshNetworkAction:(id)sender {
+    Reachability *myNetwork = [Reachability reachabilityWithHostname:@"google.com"];
+    NetworkStatus myStatus = [myNetwork currentReachabilityStatus];
+    
+    if(myStatus == NotReachable) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            nullStateLabel.text = @"You still don't have internet. :(";
+        });
+    } else{
+        if(myStatus == ReachableViaWWAN) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hm..." message:@"Looks like you're connected via cellular data. This app uses A LOT of data (downloading large 2-10 MB sized gifs), so beware!" delegate:self cancelButtonTitle:@"I'm willing to use my data." otherButtonTitles:@"Hm.. I don't have much data.", nil];
+            [alert show];
+        } else if(myStatus == ReachableViaWiFi) {
+            [self setupMainView];
+        }
+    }
 }
 
 - (IBAction)refreshAction:(id)sender {
