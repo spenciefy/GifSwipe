@@ -7,7 +7,6 @@
 //
 
 #import "GSGifManager.h"
-#import <FacebookSDK/FacebookSDK.h>
 #import "GSGif.h"
 #import <AFNetworking/AFHTTPRequestOperation.h>
 

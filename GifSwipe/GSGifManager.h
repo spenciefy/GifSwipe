@@ -14,8 +14,6 @@
 - (void)fetchGifsFrom:(NSString *)from limit:(NSString *)limit new:(BOOL)new withCompletionBlock:(void (^)(NSArray *gifs, NSArray *gifIDs, NSError *error))completionBlock;
 
 - (void)startLoadingGifsInBackground;
-- (void)stopLoadingGifs;
-
     
 @property (nonatomic, strong) NSMutableArray *addedGifIDs;
 @property (nonatomic, strong) NSMutableArray *gifs;

@@ -49,7 +49,7 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
     self.layer.cornerRadius = 5.f;
     self.layer.masksToBounds = YES;
     self.layer.borderWidth = 2.f;
-    self.layer.borderColor = [UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1].CGColor;
+    self.layer.borderColor = [UIColor clearColor].CGColor;//[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1].CGColor;
 }
 
 - (void)constructImageView {
@@ -57,7 +57,7 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
     CGRect imageFrame = CGRectMake(0,
                                     0,
                                     CGRectGetWidth(self.bounds),
-                                  CGRectGetHeight(self.bounds) - bottomHeight);
+                                  CGRectGetHeight(self.bounds) - bottomHeight + 3);
  
     _backgroundImageView = [[UIImageView alloc] initWithFrame:imageFrame];
     _backgroundImageView.clipsToBounds = YES;
@@ -99,6 +99,9 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
                                     bottomHeight);
     _mainView = [[UIView alloc] initWithFrame:bottomFrame];
     _mainView.backgroundColor = [UIColor whiteColor];
+    _mainView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+
+    _mainView.layer.borderWidth = 1.5f;
     _mainView.clipsToBounds = YES;
     _mainView.autoresizingMask = UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleTopMargin;

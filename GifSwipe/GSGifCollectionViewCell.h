@@ -18,7 +18,6 @@
 @property (strong, nonatomic) GSGif *gif;
 @property (strong, nonatomic) FLAnimatedImage *gifImage;
 
-
 @end
 
 

@@ -54,27 +54,27 @@
 #define COCOAPODS_VERSION_MINOR_BlurImageProcessor 0
 #define COCOAPODS_VERSION_PATCH_BlurImageProcessor 0
 
-// Bolts
-#define COCOAPODS_POD_AVAILABLE_Bolts
-#define COCOAPODS_VERSION_MAJOR_Bolts 1
-#define COCOAPODS_VERSION_MINOR_Bolts 1
-#define COCOAPODS_VERSION_PATCH_Bolts 3
-
 // FLAnimatedImage
 #define COCOAPODS_POD_AVAILABLE_FLAnimatedImage
 #define COCOAPODS_VERSION_MAJOR_FLAnimatedImage 1
 #define COCOAPODS_VERSION_MINOR_FLAnimatedImage 0
 #define COCOAPODS_VERSION_PATCH_FLAnimatedImage 7
 
-// Facebook-iOS-SDK
-#define COCOAPODS_POD_AVAILABLE_Facebook_iOS_SDK
-#define COCOAPODS_VERSION_MAJOR_Facebook_iOS_SDK 3
-#define COCOAPODS_VERSION_MINOR_Facebook_iOS_SDK 21
-#define COCOAPODS_VERSION_PATCH_Facebook_iOS_SDK 1
-
 // MDCSwipeToChoose
 #define COCOAPODS_POD_AVAILABLE_MDCSwipeToChoose
 #define COCOAPODS_VERSION_MAJOR_MDCSwipeToChoose 0
 #define COCOAPODS_VERSION_MINOR_MDCSwipeToChoose 2
 #define COCOAPODS_VERSION_PATCH_MDCSwipeToChoose 1
+
+// Mixpanel
+#define COCOAPODS_POD_AVAILABLE_Mixpanel
+#define COCOAPODS_VERSION_MAJOR_Mixpanel 2
+#define COCOAPODS_VERSION_MINOR_Mixpanel 6
+#define COCOAPODS_VERSION_PATCH_Mixpanel 2
+
+// Mixpanel/MPCategoryHelpers
+#define COCOAPODS_POD_AVAILABLE_Mixpanel_MPCategoryHelpers
+#define COCOAPODS_VERSION_MAJOR_Mixpanel_MPCategoryHelpers 2
+#define COCOAPODS_VERSION_MINOR_Mixpanel_MPCategoryHelpers 6
+#define COCOAPODS_VERSION_PATCH_Mixpanel_MPCategoryHelpers 2
 

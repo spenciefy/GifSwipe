@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 #import "GSGifManager.h"
+#import "Mixpanel.h"
+
+#define MIXPANEL_TOKEN @"060576c12db9fc6a26da3bd583934490"
 
 @interface AppDelegate ()
 
@@ -17,6 +20,13 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    // Initialize the library with your
+    // Mixpanel project token, MIXPANEL_TOKEN
+    [Mixpanel sharedInstanceWithToken:MIXPANEL_TOKEN];
+    Mixpanel *mixpanel = [Mixpanel sharedInstance];
+    [mixpanel track:@"Opened App" properties:@{}];
+
     [[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
     CGFloat verticalOffset = 3;
     [[UINavigationBar appearance] setTitleVerticalPositionAdjustment:verticalOffset forBarMetrics:UIBarMetricsDefault];

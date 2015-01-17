@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		6B3FBB29B4FE8E4E3D088466 /* libPods-GifSwipe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9F2931C7D1AABD7D1004B0 /* libPods-GifSwipe.a */; };
+		6C15368F1A69DDCC00BA234E /* searching.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C15368E1A69DDCC00BA234E /* searching.gif */; };
+		6C1536921A69E94A00BA234E /* thereisnoneedtobeupset.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C1536901A69E94A00BA234E /* thereisnoneedtobeupset.gif */; };
+		6C1536931A69E94A00BA234E /* now-is-the-time-to-be-upset.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C1536911A69E94A00BA234E /* now-is-the-time-to-be-upset.gif */; };
 		6C886B3C1A510A1800088119 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B3B1A510A1800088119 /* main.m */; };
 		6C886B3F1A510A1800088119 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B3E1A510A1800088119 /* AppDelegate.m */; };
 		6C886B451A510A1800088119 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B431A510A1800088119 /* Main.storyboard */; };
@@ -21,7 +24,6 @@
 		6C886B6D1A510A4100088119 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B681A510A4100088119 /* UIImage+animatedGIF.m */; };
 		6C886B741A511BDE00088119 /* sad.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B731A511BDE00088119 /* sad.gif */; };
 		6C886B771A51590000088119 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B761A51590000088119 /* Reachability.m */; };
-		6C886B791A515D1900088119 /* searching.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B781A515D1900088119 /* searching.gif */; };
 		6C886B811A51F2D000088119 /* heart65@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C886B801A51F2D000088119 /* heart65@2x.png */; };
 		6C886B871A5208AC00088119 /* UIView+MDCBorderedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B861A5208AC00088119 /* UIView+MDCBorderedLabel.m */; };
 		6C886B8A1A52090B00088119 /* MDCGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C886B891A52090B00088119 /* MDCGeometry.m */; };
@@ -47,6 +49,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6C15368E1A69DDCC00BA234E /* searching.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = searching.gif; sourceTree = "<group>"; };
+		6C1536901A69E94A00BA234E /* thereisnoneedtobeupset.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = thereisnoneedtobeupset.gif; sourceTree = "<group>"; };
+		6C1536911A69E94A00BA234E /* now-is-the-time-to-be-upset.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "now-is-the-time-to-be-upset.gif"; sourceTree = "<group>"; };
 		6C886B361A510A1800088119 /* GifSwipe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GifSwipe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C886B3A1A510A1800088119 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6C886B3B1A510A1800088119 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -71,7 +76,6 @@
 		6C886B731A511BDE00088119 /* sad.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = sad.gif; sourceTree = "<group>"; };
 		6C886B751A51590000088119 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		6C886B761A51590000088119 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-		6C886B781A515D1900088119 /* searching.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = searching.gif; sourceTree = "<group>"; };
 		6C886B801A51F2D000088119 /* heart65@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "heart65@2x.png"; sourceTree = "<group>"; };
 		6C886B851A5208AC00088119 /* UIView+MDCBorderedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+MDCBorderedLabel.h"; sourceTree = "<group>"; };
 		6C886B861A5208AC00088119 /* UIView+MDCBorderedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+MDCBorderedLabel.m"; sourceTree = "<group>"; };
@@ -142,9 +146,11 @@
 				6C886B3E1A510A1800088119 /* AppDelegate.m */,
 				6C886B431A510A1800088119 /* Main.storyboard */,
 				6C886B731A511BDE00088119 /* sad.gif */,
-				6C886B781A515D1900088119 /* searching.gif */,
 				6C886B8B1A56076E00088119 /* nullstate.gif */,
 				6C886B801A51F2D000088119 /* heart65@2x.png */,
+				6C15368E1A69DDCC00BA234E /* searching.gif */,
+				6C1536901A69E94A00BA234E /* thereisnoneedtobeupset.gif */,
+				6C1536911A69E94A00BA234E /* now-is-the-time-to-be-upset.gif */,
 				6CC149F11A5699C200FDF5AA /* heythere.gif */,
 				6CC149F31A572F8F00FDF5AA /* liked.png */,
 				6CC149F41A572F8F00FDF5AA /* share.png */,
@@ -347,10 +353,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C1536931A69E94A00BA234E /* now-is-the-time-to-be-upset.gif in Resources */,
 				6C886B8C1A56076E00088119 /* nullstate.gif in Resources */,
+				6C15368F1A69DDCC00BA234E /* searching.gif in Resources */,
+				6C1536921A69E94A00BA234E /* thereisnoneedtobeupset.gif in Resources */,
 				6C886B451A510A1800088119 /* Main.storyboard in Resources */,
 				6CC149F51A572F8F00FDF5AA /* liked.png in Resources */,
-				6C886B791A515D1900088119 /* searching.gif in Resources */,
 				6C886B4A1A510A1800088119 /* LaunchScreen.xib in Resources */,
 				6C886B471A510A1800088119 /* Images.xcassets in Resources */,
 				6C886B741A511BDE00088119 /* sad.gif in Resources */,
@@ -545,6 +553,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GifSwipe",
+				);
 				INFOPLIST_FILE = GifSwipe/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -558,6 +570,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GifSwipe",
+				);
 				INFOPLIST_FILE = GifSwipe/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

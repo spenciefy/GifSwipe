@@ -14,22 +14,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-GifSwipe-Bolts.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-GifSwipe-FLAnimatedImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-GifSwipe-Facebook-iOS-SDK.xcscheme</key>
+		<key>Pods-GifSwipe-MDCSwipeToChoose.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-GifSwipe-MDCSwipeToChoose.xcscheme</key>
+		<key>Pods-GifSwipe-Mixpanel.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -42,37 +37,32 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>1E38B77048A9059FB895D2F1</key>
+		<key>16F4544BDD94AA2812AFFDE1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>31CCEDB6536736E2E81FC048</key>
+		<key>85DE121B53FB333EE93D1B34</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>65A90E3E024C43473901E4EF</key>
+		<key>B24DF995FED4401725F2A88E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8342799E854C4871BD632297</key>
+		<key>C533ED1A5256C49F7B9F8F34</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9E52A072DEFC70180D2449D3</key>
+		<key>D0AD2E5B28E26813C2909013</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A9F75DA063D592C0490EEBE1</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F0E2FC6D1626EF96ECE2B047</key>
+		<key>D71E8FAF4C71B1E084E178ED</key>
 		<dict>
 			<key>primary</key>
 			<true/>

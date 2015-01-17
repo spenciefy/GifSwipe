@@ -5,10 +5,11 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'GifSwipe' do
 pod "MDCSwipeToChoose" , :git => 'https://github.com/spenciefy/MDCSwipeToChoose.git', :commit => '983efd2d4c2d3dfa1fcff1316cbb2ad23104eca3'
-pod "Facebook-iOS-SDK"
 pod "BlurImageProcessor"
 pod 'FLAnimatedImage', '~> 1.0'
 pod 'AFNetworking', '~> 2.4'
+pod 'Mixpanel'
+
 end
 
 target 'GifSwipeTests' do

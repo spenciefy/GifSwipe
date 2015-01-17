@@ -12,6 +12,7 @@
 #import "GSPopOutView.h"
 #import "GSGifManager.h"
 #import "GSGifCollectionViewCell.h"
+#import <Mixpanel/Mixpanel.h>
 
 #define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
@@ -224,6 +225,8 @@
             blurView.alpha = 0;
         } completion:^(BOOL finished) {
             [blurView removeFromSuperview];
+            Mixpanel *mixpanel = [Mixpanel sharedInstance];
+            [mixpanel track:@"Share" properties:@{@"Gif": gifView.gif.caption,}];
             NSString *shareString = [NSString stringWithFormat:@"Check out this Gif I found via GifSwipe!\r\r%@\r",gifView.gif.caption];
             [self shareText:shareString andImage:nil andUrl:[NSURL URLWithString:gifView.gif.gifLink]];
         }];
@@ -317,6 +320,7 @@
 }
 
 - (void)shareText:(NSString *)text andImage:(UIImage *)image andUrl:(NSURL *)url {
+
     dispatch_async(dispatch_get_main_queue(), ^() {
 
         NSMutableArray *sharingItems = [NSMutableArray new];

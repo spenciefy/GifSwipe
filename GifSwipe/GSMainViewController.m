@@ -12,6 +12,7 @@
 #import "Reachability.h"
 #import "UIImage+animatedGIF.h"
 #import "GSLikedGifsCollectionViewController.h"
+#import <Mixpanel/Mixpanel.h>
 
 @interface GSMainViewController ()
 
@@ -58,13 +59,18 @@
                 self.instructionsGifView.alpha = 1;
             }];
         });
+    } else {
+        UIBarButtonItem *refreshBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshAction:)];
+        self.navigationItem.leftBarButtonItem = refreshBarButtonItem;
+        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
     }
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSData *data = [defaults objectForKey:@"displayedGifIDs"];
     if(data) {
-    [GSGifManager sharedInstance].displayedGifIDs = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    NSLog(@"loaded displayedGifIDs: %@",  [GSGifManager sharedInstance].displayedGifIDs);
+        [GSGifManager sharedInstance].displayedGifIDs = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        NSLog(@"loaded displayedGifIDs: %@",  [GSGifManager sharedInstance].displayedGifIDs);
     }
     
     //Load liked gifs from defaults
@@ -96,9 +102,12 @@
                         self.frontGifView.alpha = 1;
                         self.backGifView.alpha = 1;
                     }];
-                    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
-                    [self.navigationItem.leftBarButtonItem setEnabled:YES];
-                    
+                    if(!isFirstLaunch) {
+                        UIBarButtonItem *shareBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareAction:)];
+                        self.navigationItem.leftBarButtonItem = shareBarButtonItem;
+                        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+                        [self.navigationItem.leftBarButtonItem setEnabled:YES];
+                    }
                     NSTimer *timer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(checkIfNeedToReload:) userInfo:nil repeats:YES];
                     [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
                 });
@@ -164,10 +173,14 @@
 }
 
 - (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction {
+    Mixpanel *mixpanel = [Mixpanel sharedInstance];
+    
+    [mixpanel track:@"Gif Swiped" properties:@{
+                                                  @"Gif": self.currentGifView.gif.caption,
+                                                  }];
     [self setNullStateLoading];
 
     if([view isKindOfClass:[GSGifView class]]) {
-    
         if([GSGifManager sharedInstance].gifs.count >= 10) {
             [[GSGifManager sharedInstance] setLoadGifs:NO];
             currentlyAddingGifs = NO;
@@ -259,6 +272,8 @@
                         self.frontGifView.alpha = 1;
                         self.backGifView.alpha = 1;
                     }];
+                    UIBarButtonItem *shareBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareAction:)];
+                    self.navigationItem.leftBarButtonItem = shareBarButtonItem;
                     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
                     [self.navigationItem.leftBarButtonItem setEnabled:YES];
                 });
@@ -280,12 +295,20 @@
         }
         
         NSLog(@"number of gifs: %lu", (unsigned long)[[GSGifManager sharedInstance].gifs count]);
+    } else if([view isKindOfClass:[GSOnboardingInstructionsView class]]){
+        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
     }
 }
 
 
 - (void)checkIfNeedToReload:(id)sender {
     if(self.backGifView == nil && self.frontGifView == nil) {
+        UIBarButtonItem *refreshBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshAction:)];
+        self.navigationItem.leftBarButtonItem = refreshBarButtonItem;
+        [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
+        
         if([GSGifManager sharedInstance].gifs.count >= 3) {
             //Load front and back views
             self.frontGifView = [self popGifViewWithFrame:[self frontGifViewFrame]];
@@ -302,6 +325,8 @@
                     self.frontGifView.alpha = 1;
                     self.backGifView.alpha = 1;
                 }];
+                UIBarButtonItem *shareBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareAction:)];
+                self.navigationItem.leftBarButtonItem = shareBarButtonItem;
                 [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1]];
                 [self.navigationItem.leftBarButtonItem setEnabled:YES];
             });
@@ -334,7 +359,7 @@
     
     MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
     options.delegate = self;
-    options.threshold = 160.f;
+    options.threshold = 110.f;
     options.onPan = ^(MDCPanState *state){
         CGRect frame = [self backGifViewFrame];
         self.backGifView.frame = CGRectMake(frame.origin.x,
@@ -361,7 +386,7 @@
     
     MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
     options.delegate = self;
-    options.threshold = 160.f;
+    options.threshold = 110.f;
     options.onPan = ^(MDCPanState *state){
         CGRect frame = [self backGifViewFrame];
         self.backGifView.frame = CGRectMake(frame.origin.x,
@@ -381,7 +406,7 @@
 - (GSOnboardingWelcomeView *)popOnboardingWelcomeViewWithFrame:(CGRect)frame {
     MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
     options.delegate = self;
-    options.threshold = 160.f;
+    options.threshold = 110.f;
     options.onPan = ^(MDCPanState *state){
         CGRect frame = [self backGifViewFrame];
         self.instructionsGifView.frame = CGRectMake(frame.origin.x,
@@ -396,7 +421,7 @@
 - (GSOnboardingInstructionsView *)popOnboardingInstructionsViewWithFrame:(CGRect)frame {
     MDCSwipeToChooseViewOptions *options = [MDCSwipeToChooseViewOptions new];
     options.delegate = self;
-    options.threshold = 160.f;
+    options.threshold = 110.f;
 
     GSOnboardingInstructionsView *instructionsOnboardingView = [[GSOnboardingInstructionsView alloc] initWithFrame:frame options:options];
     return instructionsOnboardingView;
@@ -422,9 +447,9 @@
 
 - (void)setupNullState{
     nullStateImageView = [[FLAnimatedImageView alloc] init];
-    nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
+    nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 30, 250, 160);
     nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
-    nullStateImageView.contentMode = UIViewContentModeScaleAspectFit;
+    nullStateImageView.contentMode = UIViewContentModeScaleToFill;
     NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
     NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
     
@@ -432,15 +457,16 @@
     nullStateImageView.animatedImage = gifImage;
     [self.view addSubview:nullStateImageView];
     
-    nullStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 30, 300, 500)];
-    nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) + 80);
-    nullStateLabel.font = [UIFont fontWithName:@"Avenir-Roman" size:30];
+    nullStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700)];
+    nullStateLabel.center = CGPointMake(nullStateImageView.center.x, nullStateLabel.center.y);
+    nullStateLabel.font = [UIFont fontWithName:@"Avenir-Roman" size:25];
     nullStateLabel.textColor = [UIColor darkGrayColor];//[UIColor colorWithRed:232/255.0 green:41/255.0 blue:78/255.0 alpha:1];
-    nullStateLabel.numberOfLines = 5;
+    nullStateLabel.numberOfLines = 0;
     nullStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
     nullStateLabel.textAlignment = NSTextAlignmentCenter;
     nullStateLabel.text = @"Finding a batch of Gifs for you :)";
-    
+    nullStateLabel.adjustsFontSizeToFitWidth = YES;
+    [nullStateLabel sizeToFit];
     if(isFirstLaunch) {
         nullStateImageView.alpha = 0;
         nullStateLabel.alpha = 0;
@@ -460,12 +486,10 @@
         
         FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
         nullStateImageView.animatedImage = gifImage;
-        
         nullStateLabel.text = @"Finding some more Gifs for you :)";
-        
-        nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 250, 200);
-        nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
-        
+        nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+        nullStateLabel.adjustsFontSizeToFitWidth = YES;
+        [nullStateLabel sizeToFit];
     });
 }
 
@@ -473,15 +497,16 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         nullStateImageView.alpha = 1;
         nullStateLabel.alpha = 1;
-        nullStateImageView.frame = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 20, 199, 142);
         nullStateLabel.text = @"You're not connected to the internet :(";
         NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
         NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
         FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
-        nullStateImageView.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds) - 50);
         
         nullStateImageView.animatedImage = gifImage;
-        
+
+        nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+        nullStateLabel.adjustsFontSizeToFitWidth = YES;
+        [nullStateLabel sizeToFit];
     });
 }
 
@@ -542,9 +567,115 @@
 
 
 - (IBAction)shareAction:(id)sender {
+    Mixpanel *mixpanel = [Mixpanel sharedInstance];
+    [mixpanel track:@"Share" properties:@{@"Gif": self.currentGifView.gif.caption,}];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *shareString = [NSString stringWithFormat:@"Check out this Gif I found via GifSwipe!\r\r%@\r",self.currentGifView.gif.caption];
         [self shareText:shareString andImage:nil andUrl:[NSURL URLWithString:self.currentGifView.gif.gifLink]];
+    });
+}
+
+- (IBAction)refreshAction:(id)sender {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        switch(arc4random_uniform(7)) {
+            case 0: {
+                nullStateLabel.text = @"Be patient, be patient. Finding funny gifs is not an easy job.";
+                nullStateLabel.frame =  CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700);
+                nullStateLabel.adjustsFontSizeToFitWidth = YES;
+                [nullStateLabel sizeToFit];
+                nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+
+                NSString *path=[[NSBundle mainBundle]pathForResource:@"nullstate" ofType:@"gif"];
+                NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+                
+                FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+                nullStateImageView.animatedImage = gifImage;
+                
+                break;
+            }
+            case 1: {
+                nullStateLabel.text = @"This app is slow because of the dude who made it. Blame him.";
+                nullStateLabel.frame =  CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700);
+                nullStateLabel.adjustsFontSizeToFitWidth = YES;
+                [nullStateLabel sizeToFit];
+                nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+
+                NSString *path=[[NSBundle mainBundle]pathForResource:@"heythere" ofType:@"gif"];
+                NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+                FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+                nullStateImageView.animatedImage = gifImage;
+                break;
+            }
+            case 2: {
+                nullStateLabel.text = @"Should you really be using this app right now? Nothing better to do?";
+                nullStateLabel.frame =  CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700);
+                nullStateLabel.adjustsFontSizeToFitWidth = YES;
+                [nullStateLabel sizeToFit];
+                nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+
+                NSString *path=[[NSBundle mainBundle]pathForResource:@"searching" ofType:@"gif"];
+                NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+                
+                FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+                nullStateImageView.animatedImage = gifImage;
+                break;}
+            case 3: {
+                nullStateLabel.text = @"You are using a Tinder for gifs app. Think about that for a second.";
+                nullStateLabel.frame =  CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700);
+                nullStateLabel.adjustsFontSizeToFitWidth = YES;
+                [nullStateLabel sizeToFit];
+                nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+
+                NSString *path=[[NSBundle mainBundle]pathForResource:@"sad" ofType:@"gif"];
+                NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+                
+                FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+                nullStateImageView.animatedImage = gifImage;
+                break;
+            }
+            case 4: {
+                nullStateLabel.text = @"Sincere apologies for the slow loading times. ";
+                nullStateLabel.frame =  CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700);
+                nullStateLabel.adjustsFontSizeToFitWidth = YES;
+                [nullStateLabel sizeToFit];
+                nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+
+                NSString *path=[[NSBundle mainBundle]pathForResource:@"thereisnoneedtobeupset" ofType:@"gif"];
+                NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+                FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+                nullStateImageView.animatedImage = gifImage;
+                break;
+            }
+            case 5: {
+                nullStateLabel.text = @"I made this slow just because I have a monopoly over the Tinder for gifs market.";
+                nullStateLabel.frame =  CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700);
+                nullStateLabel.adjustsFontSizeToFitWidth = YES;
+                [nullStateLabel sizeToFit];
+                nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+
+
+                NSString *path=[[NSBundle mainBundle]pathForResource:@"thereisnoneedtobeupset" ofType:@"gif"];
+                NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+                FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+                nullStateImageView.animatedImage = gifImage;
+                break;
+            }
+            case 6: {
+                nullStateLabel.text = @"^^^^";
+                nullStateLabel.frame =  CGRectMake(nullStateImageView.frame.origin.x,nullStateImageView.frame.origin.y + nullStateImageView.frame.size.height + 10, 300, 700);
+                nullStateLabel.adjustsFontSizeToFitWidth = YES;
+                [nullStateLabel sizeToFit];
+                nullStateLabel.center = CGPointMake(CGRectGetMidX(self.view.frame), nullStateLabel.center.y);
+                
+                NSString *path=[[NSBundle mainBundle]pathForResource:@"now-is-the-time-to-be-upset" ofType:@"gif"];
+                NSURL *url=[[NSURL alloc] initFileURLWithPath:path];
+                FLAnimatedImage *gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:url]];
+                nullStateImageView.animatedImage = gifImage;
+                break;
+            }
+        }
+    
     });
 }
 
